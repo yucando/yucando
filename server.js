@@ -1,8 +1,18 @@
 #!/bin/env node
 //  OpenShift sample Node application
 var express = require('express');
-var fs      = require('fs');
 
+var fs      = require('fs');
+var mongo = require('mongodb')
+var MongoClient = require('mongodb').MongoClient
+  , format = require('util').format;
+//var crypto = require('crypto')
+var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var config = require('./config'); // get our config file
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+
+var testDB
 
 /**
  *  Define the sample application.
@@ -29,7 +39,7 @@ var SampleApp = function() {
             //  Log errors on OpenShift but continue w/ 127.0.0.1 - this
             //  allows us to run/test the app locally.
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
-            self.ipaddress = "127.0.0.1";
+            self.ipaddress = "127.0.0.1"
         };
     };
 
@@ -89,22 +99,6 @@ var SampleApp = function() {
     /*  App server functions (main app logic here).                       */
     /*  ================================================================  */
 
-    /**
-     *  Create the routing table entries + handlers for the application.
-     */
-    self.createRoutes = function() {
-        self.routes = { };
-
-        self.routes['/asciimo'] = function(req, res) {
-            var link = "http://i.imgur.com/kmbjB.png";
-            res.send("<html><body><img src='" + link + "'></body></html>");
-        };
-
-        self.routes['/'] = function(req, res) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
-        };
-    };
 
 
     /**
@@ -112,13 +106,48 @@ var SampleApp = function() {
      *  the handlers.
      */
     self.initializeServer = function() {
-        self.createRoutes();
-        self.app = express.createServer();
 
-        //  Add handlers for the app (from the routes).
-        for (var r in self.routes) {
-            self.app.get(r, self.routes[r]);
-        }
+      self.app = express()
+      var db
+      
+      // Get connection to mongo 
+      mongo_ip = "127.0.0.1"
+      mongo_port = 27017
+      connectString = 'mongodb://' + mongo_ip + ':' + mongo_port + '/yucando/'
+      MongoClient.connect(connectString, function(err, dbconn) {
+        if (err) throw err;
+        db = dbconn
+        
+        // Create a static directory to access stylesheets
+        self.app.use("/styles",express.static(__dirname + "/styles"));
+        self.app.use("/js",express.static(__dirname + "/js"));
+        self.app.use(bodyParser.urlencoded({ extended: false }));
+        self.app.use(bodyParser.json());
+        self.app.use(bodyParser())
+        self.app.set('superSecret', config.secret);
+        //self.app.use('/api', apiRoutes)
+        task = require('./routes/task.js')(db)
+        self.app.use('/task', task)
+        
+        user = require('./routes/user.js')(db)
+        self.app.use('/user', user)
+        
+        self.app.get('', function(req, res) {
+            res.setHeader('Content-Type', 'text/html');
+            res.send(self.cache_get('index.html') );
+        });
+        
+        self.app.get('/', function(req, res) {
+            res.setHeader('Content-Type', 'text/html');
+            res.send(self.cache_get('index.html') );
+        });
+
+      })
+
+  
+  
+    
+
     };
 
 
@@ -156,4 +185,3 @@ var SampleApp = function() {
 var zapp = new SampleApp();
 zapp.initialize();
 zapp.start();
-
