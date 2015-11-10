@@ -113,8 +113,9 @@ var SampleApp = function() {
       // Get connection to mongo 
       mongo_port = 27017
       mongo_ip = 'localhost'
-      connectString = 'mongodb://' + mongo_ip + ':' + mongo_port + '/yucando/'
-      mongo_url = mongo_url = process.env.OPENSHIFT_MONGODB_DB_URL + 'yucando/'|| connectString
+      connectString = 'mongodb://' + mongo_ip + ':' + mongo_port + '/'
+      mongo_url = mongo_url = process.env.OPENSHIFT_MONGODB_DB_URL || connectString
+      mongo_url += 'yucando/'
       console.log(mongo_url)
       mongoose.connect(mongo_url)
       var db = mongoose.connection;
@@ -122,6 +123,8 @@ var SampleApp = function() {
       db.once('open', function (callback) {
         // yay!
       });
+      db.collection('tasks').insert({'name':'Debug mongo', 'user':'wheelerj','estimatedTime':3600})
+
       
      // connectString = mongo_url
       /*MongoClient.connect(connectString, function(err, dbconn) {
