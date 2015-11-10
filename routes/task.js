@@ -55,6 +55,21 @@ module.exports = function(db) {
     });  
   })
   
+  router.post('/complete/:id', function(req, res) {
+    var o_id = new mongo.ObjectID(req.params.id);
+    var json = {}
+    cursor = db.collection('tasks').find({'_id':o_id})
+    cursor.toArray(function(err, docs) {
+        json = docs[0]
+        json.timeCompleted = new Date()
+      db.collection('tasks').update({'_id':o_id}, json)
+      cursor = db.collection('tasks').find({'_id':o_id})
+      cursor.toArray(function(err, docs) {
+          res.send(docs[0])
+      });
+    });    
+  })
+  
   router.get('/punch/:id', function(req, res){
     console.log(req.headers.authorization)
     var o_id = new mongo.ObjectID(req.params.id);

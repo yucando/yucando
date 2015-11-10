@@ -141,16 +141,18 @@
           </form>
           <!-- /create task form -->
         <button ng-click="areTimestampsShowing = !areTimestampsShowing">Toggle Timestamps</button>
+        <button ng-click="areCompletedsShowing = !areCompletedsShowing">Toggle Completed Tasks</button>
 
         <!--{{ firstName + " " + lastName }} is welcome here.-->
           <ul>
-            <li ng-repeat="task in tasks">
-              {{task.name}} - {{task.timeEstimate - task.totalTime | secondsToDateTime | date:'HH:mm:ss'}} left to go! ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete)
+            <li ng-repeat="task in tasks" ng-show = "task.isIncomplete || areCompletedsShowing">
+              {{task.name}} - {{task.timeEstimate - task.totalTime | secondsToDateTime | date:'HH:mm:ss'}} {{task.timeEstimate - task.totalTime }}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete)
               <ul>
                 <li ng-show = "areTimestampsShowing" ng-repeat="punch in task.punches">
                   {{punch.in}} - {{punch.out}} -- {{punch.duration}}
                 </li>
                 <button ng-class="task.isActive ? 'tracking-on' : 'tracking-off'" ng-click="punch(task._id)">Punch</button>
+                <button ng-click="complete(task._id)">Complete</button>
               </ul>
             </li>
           </ul>
@@ -161,6 +163,7 @@
       <!-- right panel -->
       <div class = "col-md-3">
         <h2>Social Pane</h2>
+        <p ng-bind="counter"></p>
       </div>
       <!-- /right panel -->
       
