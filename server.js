@@ -111,42 +111,52 @@ var SampleApp = function() {
       var db
       
       // Get connection to mongo 
-      mongo_ip = 'localhost'
       mongo_port = 27017
+      mongo_ip = 'localhost'
       connectString = 'mongodb://' + mongo_ip + ':' + mongo_port + '/yucando/'
-      MongoClient.connect(connectString, function(err, dbconn) {
-        if (err) throw err;
-        db = dbconn
-        
-        // Create a static directory to access stylesheets
-        self.app.use("/styles",express.static(__dirname + "/styles"));
-        self.app.use("/js",express.static(__dirname + "/js"));
-        self.app.use(bodyParser.urlencoded({ extended: false }));
-        self.app.use(bodyParser.json());
-        self.app.use(bodyParser())
-        self.app.set('superSecret', config.secret);
-        //self.app.use('/api', apiRoutes)
-        task = require('./routes/task.js')(db)
-        self.app.use('/task', task)
-        
-        user = require('./routes/user.js')(db)
-        self.app.use('/user', user)
-        
-        self.app.get('', function(req, res) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
-        });
-        
-        self.app.get('/', function(req, res) {
-            res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
-        });
+      mongo_url = mongo_url = process.env.OPENSHIFT_MONGODB_DB_URL || connectString
+      console.log(mongo_url)
+      mongoose.connect(mongo_url)
+      var db = mongoose.connection;
+      db.on('error', console.error.bind(console, 'connection error:'));
+      db.once('open', function (callback) {
+        // yay!
+      });
+      
+     // connectString = mongo_url
+      /*MongoClient.connect(connectString, function(err, dbconn) {
+        if (err) throw err;*/
+      //db = dbconn
+      
+      // Create a static directory to access stylesheets
+      self.app.use("/styles",express.static(__dirname + "/styles"));
+      self.app.use("/js",express.static(__dirname + "/js"));
+      self.app.use(bodyParser.urlencoded({ extended: false }));
+      self.app.use(bodyParser.json());
+      self.app.use(bodyParser())
+      self.app.set('superSecret', config.secret);
+      //self.app.use('/api', apiRoutes)
+      task = require('./routes/task.js')(db)
+      self.app.use('/task', task)
+      
+      user = require('./routes/user.js')(db)
+      self.app.use('/user', user)
+      
+      self.app.get('', function(req, res) {
+          res.setHeader('Content-Type', 'text/html');
+          res.send(self.cache_get('index.html') );
+      });
+      
+      self.app.get('/', function(req, res) {
+          res.setHeader('Content-Type', 'text/html');
+          res.send(self.cache_get('index.html') );
+      });
 
-      })
+    //})
+
+
 
   
-  
-    
 
     };
 
