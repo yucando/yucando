@@ -127,6 +127,19 @@
       <div class = "col-md-6">
         <h2>Tasks Pane</h2>
         <div>
+          <!-- Create task form -->
+          <form id="login-form" ng-submit="createTask()" method="post" role="form" style="display: block;">
+            <div class="form-group">
+              <input type="text" ng-model="name" name="name" id="name" tabindex="1" class="form-control" placeholder="Task name" value="">
+            </div>
+            <div class="form-group">
+              <input type="text" ng-model="timeEstimate" name="timeEstimate" id="timeEstimate" tabindex="2" class="form-control" placeholder="Estimated time in seconds">
+            </div>
+            <div>
+              <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Create Task">
+            </div>
+          </form>
+          <!-- /create task form -->
         <button ng-click="areTimestampsShowing = !areTimestampsShowing">Toggle Timestamps</button>
 
         <!--{{ firstName + " " + lastName }} is welcome here.-->

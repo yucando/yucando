@@ -43,6 +43,14 @@ app.controller("myCtrl",function($scope, $http, $timeout) {
     })
   }
   
+  $scope.createTask = function() {
+    json = {"name" : $scope.name, "timeEstimate" : $scope.timeEstimate}
+    var g = $http.post('/task/create', json)
+    g.success(function(response){
+      loadTasks($http)
+    });
+  }
+  
   setHeaderToken = function($http, token) {
       console.log('Setting rerouting properties')
       $http.defaults.headers.common.Authorization = 'Token ' + token

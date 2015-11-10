@@ -27,6 +27,34 @@ module.exports = function(db) {
 
   });
   
+  router.post('/create', function(req, res){
+    console.log(req.headers.authorization)
+    tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
+    token = (tokenArray.length == 2) ? tokenArray[1] : undefined
+    console.log("Token: " + token)
+    jwt.verify(token, config.secret, function(err, decoded) {      
+      if (err) {
+        //return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded; 
+        user = req.decoded.username
+        name = req.body.name
+        timeEstimate = parseInt(req.body.timeEstimate)
+        json = {
+          'user':req.decoded.username,
+          'name':name,
+          'timeEstimate':timeEstimate
+        }
+        db.collection('tasks').insert(json)
+        
+        //cursor.toArray(function(err, docs) {
+            res.send('Inserted a document')
+        //});
+      }
+    });  
+  })
+  
   router.get('/punch/:id', function(req, res){
     console.log(req.headers.authorization)
     var o_id = new mongo.ObjectID(req.params.id);

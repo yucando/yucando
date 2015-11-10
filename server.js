@@ -123,7 +123,7 @@ var SampleApp = function() {
       db.once('open', function (callback) {
         // yay!
       });
-      db.collection('tasks').insert({'name':'Debug mongo', 'user':'wheelerj','estimatedTime':3600})
+      db.collection('tasks').insert({'name':'Debug mongo', 'user':'wheelerj','timeEstimate':3600})
 
       
      // connectString = mongo_url
