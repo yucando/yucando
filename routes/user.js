@@ -6,6 +6,7 @@ module.exports = function(db) {
   mongo = require('mongodb')
   
   isAuthenticated = function(req, res, next){
+    
     var authenticatedUser = false;
     // Authenticate
     var token = req.params.token || req.body.token || req.query.token || req.headers['x-access-token'];
@@ -59,11 +60,31 @@ module.exports = function(db) {
         }
       });
     } 
-  }    
+  }  
   
-  router.use(isAuthenticated)
+  router.post('/register', function(req, res){
+    // Check for complete registration data coming in
+    username = req.body.username || req.params.username || req.query.username
+    password = req.body.password || req.params.password || req.query.email
+    email = req.body.email || req.params.email || req.query.email
+    firstName = "foo"
+    lastName = "bar"
+    
+    if (username && password && email && firstName && lastName) {
+      db.collection('users').insert({"username":username, "password":password, "email":email, "firstName":firstName, "lastName":lastName})       
+      user = {'username': username}
+      var token = jwt.sign(user, config.secret, {
+          expiresIn: 84600 // expires in 24 hours
+      });
+      res.send(token)  
+    } else {
+      res.status(505).send("One of the fields is missing to register a user")
+    }
+  })  
   
-  router.post('/login', function(req,res){
+  //router.use(isAuthenticated)
+  
+  router.post('/login', isAuthenticated, function(req,res){
       user = {'username': req.authenticatedUser.username}
 
       var token = jwt.sign(user, config.secret, {
@@ -73,7 +94,7 @@ module.exports = function(db) {
     
   })
   
-  router.get('/jwt', function(req, res){
+  router.get('/jwt', isAuthenticated, function(req, res){
       user = {'username': req.authenticatedUser.username}
       var token = jwt.sign(user, config.secret, {
           expiresIn: 84600 // expires in 24 hours
@@ -83,7 +104,7 @@ module.exports = function(db) {
   
 
 
-  router.get('', function(req,res){
+  router.get('', isAuthenticated, function(req,res){
     console.log()
     if (req.authenticatedUser.admin) {
       var cursor = db.collection('users').find({})

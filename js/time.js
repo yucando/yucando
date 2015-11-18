@@ -66,6 +66,23 @@ app.controller("myCtrl",function($scope, $http, $timeout) {
     })
   }
   
+  $scope.register = function() {
+    json = {"username" : $scope.registerUsername, "password" : $scope.registerPassword, "email" : $scope.registerEmail}
+    var jwt = $http.post('/user/register', json)
+    jwt.error(function (response) {
+      $scope.jwt_is_valid = false
+      $scope.password = "";
+      $scope.loginError = "Invalid username or password"
+    })      
+    jwt.success(function (response) {
+      $scope.jwt_is_valid = true
+      $scope.loginError = ""
+      setHeaderToken($http, response)
+      loadTasks($http)    
+    })
+        
+  }
+  
   $scope.createTask = function() {
     json = {"name" : $scope.name, "timeEstimate" : $scope.timeEstimate}
     var g = $http.post('/task', json)
