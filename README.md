@@ -3,11 +3,11 @@
 ## API endpoints 
 required for Dr. Villafane's class
 
-- [ ] `GET /task/id/:id`
+- [x] `GET /task/id/:id`
 
 Return task with Mongo ID
 
-- [ ] `GET /task/points/:points`
+- [x] `GET /task/points/:points`
 
 Return all tasks with given number of points
 
@@ -15,11 +15,11 @@ Return all tasks with given number of points
 
 Return all tasks in a given project name, where project name is a string
 
-- [ ] `GET /task/time_min/:seconds`
+- [x] `GET /task/time_min/:seconds`
 
 Return all tasks with durations longer than time_min in seconds
 
-- [ ] `GET /task/time_max/:seconds`
+- [x] `GET /task/time_max/:seconds`
 
 Return all tasks with durations shorter than time_max in seconds
  

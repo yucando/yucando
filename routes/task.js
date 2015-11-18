@@ -4,12 +4,16 @@ module.exports = function(db) {
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js')
   
-  // TODO
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').remove({'_id':o_id}, function(err, result){
-      console.log(result)
-    })  
+    cursor = db.collection('tasks').find({"_id":o_id}).limit(1)
+    cursor.toArray(function(err, docs){
+      if(docs[0]){
+        res.json(docs[0]);
+      } else {
+        res.json([])
+      }
+    })
   })
   
   router.get('/points/:points', function(req, res){
