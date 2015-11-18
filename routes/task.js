@@ -1,12 +1,73 @@
 module.exports = function(db) {
+  
   var router = require('express').Router()
   mongo = require('mongodb')
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
-  var config = require('../config.js')
+  var config = require('../config.js');
+  //var security = require('../js/security.js');
+
+  isAuthenticated = function(req, res, next){
+    var authenticatedUser = false;
+    // Authenticate
+    var token = req.params.token || req.body.token || req.query.token || req.headers['x-access-token'];
+    if (!token) {
+      tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
+      token = (tokenArray.length == 2) ? tokenArray[1] : undefined
+    }
+    var username = req.params.username || req.params.user || req.body.username || req.body.user || req.query.username || req.query.user;
+    var password = req.params.password || req.params.pass || req.body.password || req.body.pass || req.query.password || req.query.pass;
+    //Verify Token
+    //Verify Username
+
+    if (username && password) {
+      // Try to authenticate against database
+      cursor = db.collection('users').find({"username":username, "password":password})
+      cursor.toArray(function(err, docs){
+        if (docs[0]){
+          req.authenticatedUser = docs[0];
+          console.log('Successufly authenticated (user:pass) ' + req.authenticatedUser.firstName)
+          return next();
+        } else {
+          res.status(403).send({
+            "success": false,
+            "message": 'Authentication failed'
+          })
+        }
+      })
+    }
+    
+    if (token) {
+      // verifies secret and checks exp
+      jwt.verify(token, config.secret, function(err, decoded) {      
+        if (err) {
+          return res.json({ success: false, message: 'Invalid token.' });    
+        } else {
+          // if everything is good, save to request for use in other routes
+          req.decoded = decoded;
+          username = decoded.username;
+          cursor = db.collection('users').find({"username":username})  
+          cursor.toArray(function(err, docs){
+            if (docs[0]){
+              req.authenticatedUser = docs[0];
+              console.log('Successufly authenticated (token) ' + req.authenticatedUser.firstName)
+              return next();
+            } else {
+              res.status(403).send({
+                "success": false,
+                "message": 'Authentication failed'
+              })
+            }
+          }) 
+        }
+      });
+    } 
+  }    
+  
+  router.use(isAuthenticated)
   
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').find({"_id":o_id}).limit(1)
+    cursor = db.collection('tasks').find({"_id":o_id})
     cursor.toArray(function(err, docs){
       if(docs[0]){
         res.json(docs[0]);
@@ -62,27 +123,12 @@ module.exports = function(db) {
   })
   
   //TODO
-  router.get('', function(req,res){
-    console.log(req.headers.authorization)
-    tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
-    token = (tokenArray.length == 2) ? tokenArray[1] : undefined
-    console.log("Token: " + token)
-    jwt.verify(token, config.secret, function(err, decoded) {      
-      if (err) {
-        //return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded; 
-        console.log(decoded)   
-        console.log('Success')//next();
-        console.log(req.decoded.username)
-        var cursor = db.collection('tasks').find({'user':req.decoded.username})
+  router.get('', function(req,res){     
+        var cursor = db.collection('tasks').find({'user':req.authenticatedUser.username})
         cursor.toArray(function(err, docs) {
             res.send(docs)
         });
-      }
     });
-  });
   
   //TODO
   router.post('', function(req, res){
