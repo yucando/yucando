@@ -24,14 +24,12 @@ module.exports = function(db) {
     })
   })
   
-  //TODO
   router.get('/project/:project', function(req, res){
     //var o_id = new mongo.ObjectID(req.params.id);
     var project = req.params.project;
-    var json = {}
     cursor = db.collection('tasks').find({'project':project})
     cursor.toArray(function(err, docs) {
-      json = docs
+      res.json(docs);
     })
   })
   

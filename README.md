@@ -11,7 +11,7 @@ Return task with Mongo ID
 
 Return all tasks with given number of points
 
-- [ ] `GET /task/project/:project`
+- [x] `GET /task/project/:project`
 
 Return all tasks in a given project name, where project name is a string
 
