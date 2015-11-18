@@ -2,7 +2,6 @@ module.exports = function(db) {
   var bodyParser = require('body-parser')
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js')
-  console.log('db is ' + typeof(db))
   var router = require('express').Router()
   mongo = require('mongodb')
 

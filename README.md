@@ -1,12 +1,42 @@
-The OpenShift `nodejs` cartridge documentation can be found at:
+# Yucando Documentation
 
-http://openshift.github.io/documentation/oo_cartridge_guide.html#nodejs
+## API endpoints 
+required for Dr. Villafane's class
 
-Be sure to run the following commands to test on your own machine
+- [ ] `GET /task/id/:id`
 
-    npm install express
-    npm install mongodb
+Return task with Mongo ID
 
-as well as setting up a mongo server on your own machine
+- [ ] `GET /task/points/:points`
 
-npm install express body-parser morgan mongoose jsonwebtoken --save
+Return all tasks with given number of points
+
+- [ ] `GET /task/project/:project`
+
+Return all tasks in a given project name, where project name is a string
+
+- [ ] `GET /task/time_min/:seconds`
+
+Return all tasks with durations longer than time_min in seconds
+
+- [ ] `GET /task/time_max/:seconds`
+
+Return all tasks with durations shorter than time_max in seconds
+ 
+- [ ] `DELETE /task/:id`
+
+Delete all tasks with Mongo ID
+
+### Deferred methods
+
+- [ ] `PUT /task/:id`
+
+Create a task with Mongo ID
+
+- [ ] `GET /task`
+
+Return all tasks URIs as JSON array
+
+- [ ] `POST /task`
+
+Create a new task, return URI of created record in JSON array
