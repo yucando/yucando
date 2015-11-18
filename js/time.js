@@ -53,11 +53,16 @@ app.controller("myCtrl",function($scope, $http, $timeout) {
   $scope.login = function() {
     json = {"username" : $scope.username, "password" : $scope.password}
     var jwt = $http.post('/user/login',json)
-            
+    jwt.error(function (response) {
+      $scope.jwt_is_valid = false
+      $scope.password = "";
+      $scope.loginError = "Invalid username or password"
+    })      
     jwt.success(function (response) {
       $scope.jwt_is_valid = true
+      $scope.loginError = ""
       setHeaderToken($http, response)
-      loadTasks($http)
+      loadTasks($http)    
     })
   }
   

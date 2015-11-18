@@ -27,8 +27,7 @@ module.exports = function(db) {
           return next();
         } else {
           res.status(403).send({
-            "success": false,
-            "message": 'Authentication failed'
+            "error":'Authentication failed'
           })
           return;
         }
@@ -52,8 +51,7 @@ module.exports = function(db) {
               return next();
             } else {
               res.status(403).send({
-                "success": false,
-                "message": 'Authentication failed'
+                "error":'Authentication failed'
               })
               return;
             }
@@ -77,7 +75,6 @@ module.exports = function(db) {
   
   router.get('/jwt', function(req, res){
       user = {'username': req.authenticatedUser.username}
-
       var token = jwt.sign(user, config.secret, {
           expiresIn: 84600 // expires in 24 hours
       });
@@ -87,6 +84,7 @@ module.exports = function(db) {
 
 
   router.get('', function(req,res){
+    console.log()
     if (req.authenticatedUser.admin) {
       var cursor = db.collection('users').find({})
       cursor.toArray(function(err, docs) {
