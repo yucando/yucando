@@ -3,7 +3,63 @@ module.exports = function(db) {
   mongo = require('mongodb')
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js')
-
+  
+  // TODO
+  router.get('/id/:id', function(req, res){
+    var o_id = new mongo.ObjectID(req.params.id);
+    cursor = db.collection('tasks').remove({'_id':o_id}, function(err, result){
+      console.log(result)
+    })  
+  })
+  
+  router.get('/points/:points', function(req, res){
+    var points = parseInt(req.params.points)
+    cursor = db.collection('tasks').find({'points':points})
+    cursor.toArray(function(err, docs){
+      res.json(docs)
+    })
+  })
+  
+  //TODO
+  router.get('/project/:project', function(req, res){
+    //var o_id = new mongo.ObjectID(req.params.id);
+    var project = req.params.project;
+    var json = {}
+    cursor = db.collection('tasks').find({'project':project})
+    cursor.toArray(function(err, docs) {
+      json = docs
+    })
+  })
+  
+  router.get('/time_min/:seconds', function(req, res){
+    var seconds = parseInt(req.params.seconds);
+    var json = {}
+    cursor = db.collection('tasks').find({'timeEstimate' : {$gte: seconds}})
+    cursor.toArray(function(err, docs) {
+      res.json(docs)
+    })
+  })
+  
+  router.get('/time_max/:seconds', function(req, res){
+    var seconds = parseInt(req.params.seconds);
+    var json = {}
+    cursor = db.collection('tasks').find({'timeEstimate' : {$lte: seconds}})
+    cursor.toArray(function(err, docs) {
+      res.json(docs)
+    })    
+  })
+  
+  //TODO
+  router.delete('/:id', function(req, res){
+    
+  })
+  
+  //TODO
+  router.put('/:id', function(req, res){
+    
+  })
+  
+  //TODO
   router.get('', function(req,res){
     console.log(req.headers.authorization)
     tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
@@ -24,10 +80,10 @@ module.exports = function(db) {
         });
       }
     });
-
   });
   
-  router.post('/create', function(req, res){
+  //TODO
+  router.post('', function(req, res){
     console.log(req.headers.authorization)
     tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
     token = (tokenArray.length == 2) ? tokenArray[1] : undefined
@@ -55,6 +111,10 @@ module.exports = function(db) {
     });  
   })
   
+  
+  /************************************************
+   * Tasks not required for Dr. Villafane         
+   ************************************************/
   router.post('/complete/:id', function(req, res) {
     var o_id = new mongo.ObjectID(req.params.id);
     var json = {}

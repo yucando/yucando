@@ -63,7 +63,7 @@ app.controller("myCtrl",function($scope, $http, $timeout) {
   
   $scope.createTask = function() {
     json = {"name" : $scope.name, "timeEstimate" : $scope.timeEstimate}
-    var g = $http.post('/task/create', json)
+    var g = $http.post('/task', json)
     g.success(function(response){
       loadTasks($http)
     });

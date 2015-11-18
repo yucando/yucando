@@ -1,0 +1,9 @@
+GET /student/id/:x
+GET /student/grade_level/:x
+GET /student/advisor/:x
+GET /student/gpa_min/:x (all students with gpa >= x)
+GET /student/gpa_max/:x (all students with gpa <= x)
+DELETE /student/:id
+(defer) PUT /student/:id (create)
+(defer) GET /student (return all student URIs as JSON array)
+(defer) POST /student (create a new student, return URI of created record in JSON array)
