@@ -35,7 +35,6 @@ module.exports = function(db) {
   
   router.get('/time_min/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    var json = {}
     cursor = db.collection('tasks').find({'timeEstimate' : {$gte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
@@ -44,16 +43,17 @@ module.exports = function(db) {
   
   router.get('/time_max/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    var json = {}
     cursor = db.collection('tasks').find({'timeEstimate' : {$lte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })    
   })
   
-  //TODO
   router.delete('/:id', function(req, res){
-    
+    var o_id = new mongo.ObjectID(req.params.id);
+    cursor = db.collection('tasks').remove({"_id":o_id})
+    // Hebrews 11:1
+    res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
   
   //TODO

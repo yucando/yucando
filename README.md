@@ -23,7 +23,7 @@ Return all tasks with durations longer than time_min in seconds
 
 Return all tasks with durations shorter than time_max in seconds
  
-- [ ] `DELETE /task/:id`
+- [x] `DELETE /task/:id`
 
 Delete all tasks with Mongo ID
 
