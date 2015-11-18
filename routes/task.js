@@ -4,12 +4,16 @@ module.exports = function(db) {
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js')
   
-  // TODO
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').remove({'_id':o_id}, function(err, result){
-      console.log(result)
-    })  
+    cursor = db.collection('tasks').find({"_id":o_id}).limit(1)
+    cursor.toArray(function(err, docs){
+      if(docs[0]){
+        res.json(docs[0]);
+      } else {
+        res.json([])
+      }
+    })
   })
   
   router.get('/points/:points', function(req, res){
@@ -20,20 +24,17 @@ module.exports = function(db) {
     })
   })
   
-  //TODO
   router.get('/project/:project', function(req, res){
     //var o_id = new mongo.ObjectID(req.params.id);
     var project = req.params.project;
-    var json = {}
     cursor = db.collection('tasks').find({'project':project})
     cursor.toArray(function(err, docs) {
-      json = docs
+      res.json(docs);
     })
   })
   
   router.get('/time_min/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    var json = {}
     cursor = db.collection('tasks').find({'timeEstimate' : {$gte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
@@ -42,16 +43,17 @@ module.exports = function(db) {
   
   router.get('/time_max/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    var json = {}
     cursor = db.collection('tasks').find({'timeEstimate' : {$lte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })    
   })
   
-  //TODO
   router.delete('/:id', function(req, res){
-    
+    var o_id = new mongo.ObjectID(req.params.id);
+    cursor = db.collection('tasks').remove({"_id":o_id})
+    // Hebrews 11:1
+    res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
   
   //TODO
