@@ -67,20 +67,39 @@ app.controller("myCtrl",function($scope, $http, $timeout) {
   }
   
   $scope.register = function() {
-    json = {"username" : $scope.registerUsername, "password" : $scope.registerPassword, "email" : $scope.registerEmail}
-    var jwt = $http.post('/user/register', json)
-    jwt.error(function (response) {
-      $scope.jwt_is_valid = false
-      $scope.password = "";
-      $scope.loginError = "Invalid username or password"
-    })      
-    jwt.success(function (response) {
-      $scope.jwt_is_valid = true
-      $scope.loginError = ""
-      setHeaderToken($http, response)
-      loadTasks($http)    
-    })
-        
+    if (angular.equals($scope.registerPassword,$scope.registerPasswordCheck)) {
+      json = {
+        "username" : $scope.registerUsername,
+        "firstName" : $scope.registerFirstName,
+        "lastName" : $scope.registerLastName,
+        "password" : $scope.registerPassword,
+        "email" : $scope.registerEmail
+      }
+      var jwt = $http.post('/user/register', json)
+      jwt.error(function (response) {
+        $scope.jwt_is_valid = false
+        $scope.password = "";
+        $scope.loginError = "Invalid username or password"
+      })      
+      jwt.success(function (response) {
+        try {
+          console.log("Trying" + response);
+          if ("error" in response) {
+            console.log(response.error)
+            $scope.registerError = response.error
+          }
+        } catch (e) {
+          $scope.registerError = ""
+          console.log("Response not JSON")
+          $scope.jwt_is_valid = true
+          $scope.loginError = ""
+          setHeaderToken($http, response)
+          loadTasks($http)   
+        }
+      })      
+    } else {
+      $scope.registerError = "Passwords don't match"
+    }    
   }
   
   $scope.createTask = function() {
@@ -161,6 +180,7 @@ countdown = function(){
   stopped = $timeout(function() {
     $scope.counter++;   
     $scope.countdown();  
+    $scope.registerError = $scope.registerPasswordCheck + $scope.registerPassword
     angular.forEach($scope.tasks, function(task, index){
       if(task.isActive)
         task.totalTime++

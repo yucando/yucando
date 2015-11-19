@@ -67,16 +67,25 @@ module.exports = function(db) {
     username = req.body.username || req.params.username || req.query.username
     password = req.body.password || req.params.password || req.query.email
     email = req.body.email || req.params.email || req.query.email
-    firstName = "foo"
-    lastName = "bar"
-    
+    firstName = req.body.firstName || req.params.firstName || req.query.firstName
+    lastName = req.body.lastName || req.params.lastName || req.query.lastName
+    console.log(req.body);
     if (username && password && email && firstName && lastName) {
-      db.collection('users').insert({"username":username, "password":password, "email":email, "firstName":firstName, "lastName":lastName})       
-      user = {'username': username}
-      var token = jwt.sign(user, config.secret, {
-          expiresIn: 84600 // expires in 24 hours
-      });
-      res.send(token)  
+      cursor = db.collection('users').find({"username":username})
+      cursor.toArray(function(err, docs){
+        console.log(docs)
+        if (docs[0]){
+          res.json({"error":"Username already exists"})
+        } else {
+          db.collection('users').insert({"username":username, "password":password, "email":email, "firstName":firstName, "lastName":lastName})       
+          user = {'username': username}
+          var token = jwt.sign(user, config.secret, {
+              expiresIn: 84600 // expires in 24 hours
+          });
+          res.send(token)            
+        }
+      })
+
     } else {
       res.status(505).send("One of the fields is missing to register a user")
     }
