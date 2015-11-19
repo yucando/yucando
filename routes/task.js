@@ -25,7 +25,6 @@ module.exports = function(db) {
       cursor.toArray(function(err, docs){
         if (docs[0]){
           req.authenticatedUser = docs[0];
-          console.log('Successufly authenticated (user:pass) ' + req.authenticatedUser.firstName)
           return next();
         } else {
           res.status(403).send({
@@ -49,7 +48,6 @@ module.exports = function(db) {
           cursor.toArray(function(err, docs){
             if (docs[0]){
               req.authenticatedUser = docs[0];
-              console.log('Successufly authenticated (token) ' + req.authenticatedUser.firstName)
               return next();
             } else {
               res.status(403).send({
@@ -67,7 +65,7 @@ module.exports = function(db) {
   
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').find({"_id":o_id})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser,"_id":o_id})
     cursor.toArray(function(err, docs){
       if(docs[0]){
         res.json(docs[0]);
@@ -79,7 +77,7 @@ module.exports = function(db) {
   
   router.get('/points/:points', function(req, res){
     var points = parseInt(req.params.points)
-    cursor = db.collection('tasks').find({'points':points})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'points':points})
     cursor.toArray(function(err, docs){
       res.json(docs)
     })
@@ -88,7 +86,7 @@ module.exports = function(db) {
   router.get('/project/:project', function(req, res){
     //var o_id = new mongo.ObjectID(req.params.id);
     var project = req.params.project;
-    cursor = db.collection('tasks').find({'project':project})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'project':project})
     cursor.toArray(function(err, docs) {
       res.json(docs);
     })
@@ -96,7 +94,7 @@ module.exports = function(db) {
   
   router.get('/time_min/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    cursor = db.collection('tasks').find({'timeEstimate' : {$gte: seconds}})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'timeEstimate' : {$gte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })
@@ -104,7 +102,7 @@ module.exports = function(db) {
   
   router.get('/time_max/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    cursor = db.collection('tasks').find({'timeEstimate' : {$lte: seconds}})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'timeEstimate' : {$lte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })    
@@ -112,7 +110,7 @@ module.exports = function(db) {
   
   router.delete('/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').remove({"_id":o_id})
+    cursor = db.collection('tasks').remove({"username":req.authenticatedUser.username,"_id":o_id})
     // Hebrews 11:1
     res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
@@ -124,7 +122,7 @@ module.exports = function(db) {
   
   //TODO
   router.get('', function(req,res){     
-        var cursor = db.collection('tasks').find({'user':req.authenticatedUser.username})
+        var cursor = db.collection('tasks').find({'username':req.authenticatedUser.username})
         cursor.toArray(function(err, docs) {
             res.send(docs)
         });
@@ -132,10 +130,8 @@ module.exports = function(db) {
   
   //TODO
   router.post('', function(req, res){
-    console.log(req.headers.authorization)
     tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
     token = (tokenArray.length == 2) ? tokenArray[1] : undefined
-    console.log("Token: " + token)
     jwt.verify(token, config.secret, function(err, decoded) {      
       if (err) {
         //return res.json({ success: false, message: 'Failed to authenticate token.' });    
@@ -146,7 +142,7 @@ module.exports = function(db) {
         name = req.body.name
         timeEstimate = parseInt(req.body.timeEstimate)
         json = {
-          'user':req.decoded.username,
+          'username':req.decoded.username,
           'name':name,
           'timeEstimate':timeEstimate
         }
@@ -179,7 +175,6 @@ module.exports = function(db) {
   })
   
   router.get('/punch/:id', function(req, res){
-    console.log(req.headers.authorization)
     var o_id = new mongo.ObjectID(req.params.id);
     var json = {}
     cursor = db.collection('tasks').find({'_id':o_id})

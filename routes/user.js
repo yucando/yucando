@@ -44,7 +44,6 @@ module.exports = function(db) {
           // if everything is good, save to request for use in other routes
           req.decoded = decoded;
           username = decoded.username;
-          console.log(decoded)
           cursor = db.collection('users').find({"username":username})  
           cursor.toArray(function(err, docs){
             if (docs[0]){
@@ -69,11 +68,9 @@ module.exports = function(db) {
     email = req.body.email || req.params.email || req.query.email
     firstName = req.body.firstName || req.params.firstName || req.query.firstName
     lastName = req.body.lastName || req.params.lastName || req.query.lastName
-    console.log(req.body);
     if (username && password && email && firstName && lastName) {
       cursor = db.collection('users').find({"username":username})
       cursor.toArray(function(err, docs){
-        console.log(docs)
         if (docs[0]){
           res.json({"error":"Username already exists"})
         } else {
@@ -114,7 +111,6 @@ module.exports = function(db) {
 
 
   router.get('', isAuthenticated, function(req,res){
-    console.log()
     if (req.authenticatedUser.admin) {
       var cursor = db.collection('users').find({})
       cursor.toArray(function(err, docs) {
