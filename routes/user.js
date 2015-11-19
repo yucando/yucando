@@ -4,77 +4,123 @@ module.exports = function(db) {
   var config = require('../config.js')
   var router = require('express').Router()
   mongo = require('mongodb')
-
-  router.get('', function(req,res){
-    var cursor = db.collection('tasks').find({})
-    cursor.toArray(function(err, docs) {
-        res.send(docs)
-    });
-  });
   
-  router.get('/jwt', function(req, res){
-      user = {'name': 'Hello', 'pass':'World'}
-
-      var token = jwt.sign(user, config.secret, {
-          expiresInMinutes: 1440 // expires in 24 hours
-      });
-      res.send(token)
-  });
-
-  router.get('/validate/:token', function(req,res){
+  isAuthenticated = function(req, res, next){
+    
+    var authenticatedUser = false;
+    // Authenticate
     var token = req.params.token || req.body.token || req.query.token || req.headers['x-access-token'];
-
-    if (token) {
-
-    // verifies secret and checks exp
-    jwt.verify(token, config.secret, function(err, decoded) {      
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded;    
-        console.log('Success')//next();
-      }
-    });
-
-  } else {
-
-    // if there is no token
-    // return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
-    });
-    
-  }
-  })
-  
-  router.post('/login', function(req,res){
-    var username, password
-    if ('username' in req.body){
-      username = req.body.username
-    } else {
-      res.send({'success' : 'false'})
-    //  return ({'success' : 'false'})
+    if (!token) {
+      tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
+      token = (tokenArray.length == 2) ? tokenArray[1] : undefined
     }
-    
-    if ('password' in req.body) {
-      password = req.body.password
-    } else {
-      res.send({'success' : 'false'})
-    //  return ({'success' : 'false'})
-    }
-    
+    var username = req.params.username || req.params.user || req.body.username || req.body.user || req.query.username || req.query.user;
+    var password = req.params.password || req.params.pass || req.body.password || req.body.pass || req.query.password || req.query.pass;
+    //Verify Token
+    //Verify Username
+
     if (username && password) {
-      user = {'username': username}
+      // Try to authenticate against database
+      cursor = db.collection('users').find({"username":username, "password":password})
+      cursor.toArray(function(err, docs){
+        if (docs[0]){
+          req.authenticatedUser = docs[0];
+          return next();
+        } else {
+          res.status(403).send({
+            "error":'Authentication failed'
+          })
+          return;
+        }
+      })
+    }
+    
+    else if (token) {
+      // verifies secret and checks exp
+      jwt.verify(token, config.secret, function(err, decoded) {      
+        if (err) {
+          return res.json({ success: false, message: 'Invalid token.' });    
+        } else {
+          // if everything is good, save to request for use in other routes
+          req.decoded = decoded;
+          username = decoded.username;
+          cursor = db.collection('users').find({"username":username})  
+          cursor.toArray(function(err, docs){
+            if (docs[0]){
+              req.authenticatedUser = docs[0];
+              return next();
+            } else {
+              res.status(403).send({
+                "error":'Authentication failed'
+              })
+              return;
+            }
+          }) 
+        }
+      });
+    } 
+  }  
+  
+  router.post('/register', function(req, res){
+    // Check for complete registration data coming in
+    username = req.body.username || req.params.username || req.query.username
+    password = req.body.password || req.params.password || req.query.email
+    email = req.body.email || req.params.email || req.query.email
+    firstName = req.body.firstName || req.params.firstName || req.query.firstName
+    lastName = req.body.lastName || req.params.lastName || req.query.lastName
+    if (username && password && email && firstName && lastName) {
+      cursor = db.collection('users').find({"username":username})
+      cursor.toArray(function(err, docs){
+        if (docs[0]){
+          res.json({"error":"Username already exists"})
+        } else {
+          db.collection('users').insert({"username":username, "password":password, "email":email, "firstName":firstName, "lastName":lastName})       
+          user = {'username': username}
+          var token = jwt.sign(user, config.secret, {
+              expiresIn: 84600 // expires in 24 hours
+          });
+          res.send(token)            
+        }
+      })
+
+    } else {
+      res.status(505).send("One of the fields is missing to register a user")
+    }
+  })  
+  
+  //router.use(isAuthenticated)
+  
+  router.post('/login', isAuthenticated, function(req,res){
+      user = {'username': req.authenticatedUser.username}
 
       var token = jwt.sign(user, config.secret, {
           expiresIn: 84600 // expires in 24 hours
       });
-      console.log('issued token')
       res.send(token)
-    }
+    
   })
+  
+  router.get('/jwt', isAuthenticated, function(req, res){
+      user = {'username': req.authenticatedUser.username}
+      var token = jwt.sign(user, config.secret, {
+          expiresIn: 84600 // expires in 24 hours
+      });
+      res.send(token)
+  });
+  
+
+
+  router.get('', isAuthenticated, function(req,res){
+    if (req.authenticatedUser.admin) {
+      var cursor = db.collection('users').find({})
+      cursor.toArray(function(err, docs) {
+          res.send(docs)
+      });
+    } else {
+      res.json({"error" : "You must be admin to see all users"})
+    }
+
+  });
   
   return router
   

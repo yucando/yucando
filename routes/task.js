@@ -1,12 +1,71 @@
 module.exports = function(db) {
+  
   var router = require('express').Router()
   mongo = require('mongodb')
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
-  var config = require('../config.js')
+  var config = require('../config.js');
+  //var security = require('../js/security.js');
+
+  isAuthenticated = function(req, res, next){
+    var authenticatedUser = false;
+    // Authenticate
+    var token = req.params.token || req.body.token || req.query.token || req.headers['x-access-token'];
+    if (!token) {
+      tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
+      token = (tokenArray.length == 2) ? tokenArray[1] : undefined
+    }
+    var username = req.params.username || req.params.user || req.body.username || req.body.user || req.query.username || req.query.user;
+    var password = req.params.password || req.params.pass || req.body.password || req.body.pass || req.query.password || req.query.pass;
+    //Verify Token
+    //Verify Username
+
+    if (username && password) {
+      // Try to authenticate against database
+      cursor = db.collection('users').find({"username":username, "password":password})
+      cursor.toArray(function(err, docs){
+        if (docs[0]){
+          req.authenticatedUser = docs[0];
+          return next();
+        } else {
+          res.status(403).send({
+            "success": false,
+            "message": 'Authentication failed'
+          })
+        }
+      })
+    }
+    
+    if (token) {
+      // verifies secret and checks exp
+      jwt.verify(token, config.secret, function(err, decoded) {      
+        if (err) {
+          return res.json({ success: false, message: 'Invalid token.' });    
+        } else {
+          // if everything is good, save to request for use in other routes
+          req.decoded = decoded;
+          username = decoded.username;
+          cursor = db.collection('users').find({"username":username})  
+          cursor.toArray(function(err, docs){
+            if (docs[0]){
+              req.authenticatedUser = docs[0];
+              return next();
+            } else {
+              res.status(403).send({
+                "success": false,
+                "message": 'Authentication failed'
+              })
+            }
+          }) 
+        }
+      });
+    } 
+  }    
+  
+  router.use(isAuthenticated)
   
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').find({"_id":o_id}).limit(1)
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser,"_id":o_id})
     cursor.toArray(function(err, docs){
       if(docs[0]){
         res.json(docs[0]);
@@ -18,7 +77,7 @@ module.exports = function(db) {
   
   router.get('/points/:points', function(req, res){
     var points = parseInt(req.params.points)
-    cursor = db.collection('tasks').find({'points':points})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'points':points})
     cursor.toArray(function(err, docs){
       res.json(docs)
     })
@@ -27,7 +86,7 @@ module.exports = function(db) {
   router.get('/project/:project', function(req, res){
     //var o_id = new mongo.ObjectID(req.params.id);
     var project = req.params.project;
-    cursor = db.collection('tasks').find({'project':project})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'project':project})
     cursor.toArray(function(err, docs) {
       res.json(docs);
     })
@@ -35,7 +94,7 @@ module.exports = function(db) {
   
   router.get('/time_min/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    cursor = db.collection('tasks').find({'timeEstimate' : {$gte: seconds}})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'timeEstimate' : {$gte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })
@@ -43,7 +102,7 @@ module.exports = function(db) {
   
   router.get('/time_max/:seconds', function(req, res){
     var seconds = parseInt(req.params.seconds);
-    cursor = db.collection('tasks').find({'timeEstimate' : {$lte: seconds}})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'timeEstimate' : {$lte: seconds}})
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })    
@@ -51,7 +110,7 @@ module.exports = function(db) {
   
   router.delete('/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').remove({"_id":o_id})
+    cursor = db.collection('tasks').remove({"username":req.authenticatedUser.username,"_id":o_id})
     // Hebrews 11:1
     res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
@@ -62,34 +121,17 @@ module.exports = function(db) {
   })
   
   //TODO
-  router.get('', function(req,res){
-    console.log(req.headers.authorization)
-    tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
-    token = (tokenArray.length == 2) ? tokenArray[1] : undefined
-    console.log("Token: " + token)
-    jwt.verify(token, config.secret, function(err, decoded) {      
-      if (err) {
-        //return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded; 
-        console.log(decoded)   
-        console.log('Success')//next();
-        console.log(req.decoded.username)
-        var cursor = db.collection('tasks').find({'user':req.decoded.username})
+  router.get('', function(req,res){     
+        var cursor = db.collection('tasks').find({'username':req.authenticatedUser.username})
         cursor.toArray(function(err, docs) {
             res.send(docs)
         });
-      }
     });
-  });
   
   //TODO
   router.post('', function(req, res){
-    console.log(req.headers.authorization)
     tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
     token = (tokenArray.length == 2) ? tokenArray[1] : undefined
-    console.log("Token: " + token)
     jwt.verify(token, config.secret, function(err, decoded) {      
       if (err) {
         //return res.json({ success: false, message: 'Failed to authenticate token.' });    
@@ -100,7 +142,7 @@ module.exports = function(db) {
         name = req.body.name
         timeEstimate = parseInt(req.body.timeEstimate)
         json = {
-          'user':req.decoded.username,
+          'username':req.decoded.username,
           'name':name,
           'timeEstimate':timeEstimate
         }
@@ -133,7 +175,6 @@ module.exports = function(db) {
   })
   
   router.get('/punch/:id', function(req, res){
-    console.log(req.headers.authorization)
     var o_id = new mongo.ObjectID(req.params.id);
     var json = {}
     cursor = db.collection('tasks').find({'_id':o_id})
