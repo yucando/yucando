@@ -3,10 +3,10 @@ module.exports = function(db) {
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js')
   var router = require('express').Router()
+  var crypto = require('crypto')
   mongo = require('mongodb')
   
   isAuthenticated = function(req, res, next){
-    
     var authenticatedUser = false;
     // Authenticate
     var token = req.params.token || req.body.token || req.query.token || req.headers['x-access-token'];
@@ -21,21 +21,22 @@ module.exports = function(db) {
 
     if (username && password) {
       // Try to authenticate against database
-      cursor = db.collection('users').find({"username":username, "password":password})
-      cursor.toArray(function(err, docs){
-        if (docs[0]){
-          req.authenticatedUser = docs[0];
-          return next();
-        } else {
-          res.status(403).send({
-            "error":'Authentication failed'
-          })
+      cursor = db.collection('users').find({"username":username}).limit(1)
+      cursor.next(function(err, cred){
+        if(err) {console.log("Error!")}
+        if(!cred) {res.status(403).send({"err":"Username or password incorrect"})}
+        var preHash = cred.salt + password;
+        var hash = crypto.createHash("sha512").update(preHash).digest("hex")
+        if(hash != cred.hash) {
+          res.status(403).send({"err":"Username or password incorrect"})
           return;
         }
+        req.authenticatedUser = cred;
+        return next(); // accessible later as req.user
       })
     }
     
-    else if (token) {
+    if ((!username || !password) && token) {
       // verifies secret and checks exp
       jwt.verify(token, config.secret, function(err, decoded) {      
         if (err) {
@@ -51,20 +52,28 @@ module.exports = function(db) {
               return next();
             } else {
               res.status(403).send({
-                "error":'Authentication failed'
+                "success": false,
+                "message": 'Authentication failed'
               })
-              return;
             }
           }) 
         }
       });
     } 
+    
+    if (!token && !(username && password)){
+      res.status(403).send({
+        "error" : "No credentials supplied"
+      })
+      return;
+    } 
+    return;
   }  
   
   router.post('/register', function(req, res){
     // Check for complete registration data coming in
     username = req.body.username || req.params.username || req.query.username
-    password = req.body.password || req.params.password || req.query.email
+    password = req.body.password || req.params.password || req.query.password
     email = req.body.email || req.params.email || req.query.email
     firstName = req.body.firstName || req.params.firstName || req.query.firstName
     lastName = req.body.lastName || req.params.lastName || req.query.lastName
@@ -74,7 +83,10 @@ module.exports = function(db) {
         if (docs[0]){
           res.json({"error":"Username already exists"})
         } else {
-          db.collection('users').insert({"username":username, "password":password, "email":email, "firstName":firstName, "lastName":lastName})       
+          var salt = crypto.randomBytes(64).toString("hex");
+          var preHash = salt + password;
+          var hash = crypto.createHash("sha512").update(preHash).digest("hex")
+          db.collection('users').insert({"username":username, "hash":hash, "salt" : salt, "email":email, "firstName":firstName, "lastName":lastName})       
           user = {'username': username}
           var token = jwt.sign(user, config.secret, {
               expiresIn: 84600 // expires in 24 hours
@@ -96,8 +108,7 @@ module.exports = function(db) {
       var token = jwt.sign(user, config.secret, {
           expiresIn: 84600 // expires in 24 hours
       });
-      res.send(token)
-    
+      res.send(token)    
   })
   
   router.get('/jwt', isAuthenticated, function(req, res){

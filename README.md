@@ -29,23 +29,23 @@ Delete all tasks with Mongo ID
 
 ### Deferred methods
 
-- [ ] `PUT /task/:id`
+- [x] ~~`PUT /task/:id`~~ `PUT /task/:name`
 
-Create a task with Mongo ID
+Create a task with ~~Mongo ID~~ task name
 
-- [ ] `GET /task`
+- [x] `GET /task`
 
-Return all tasks URIs as JSON array
+Return all tasks ~~URIs~~ as JSON array
 
-- [ ] `POST /task`
+- [x] `POST /task`
 
-Create a new task, return URI of created record in JSON array
+Create a new task, return ~~URI of~~ created record in JSON array
 
 ### Authentication
 
-- [ ] JWT authentication
+- [x] JWT authentication
 
-- [ ] Hashing passwords with salt
+- [x] Hashing passwords with salt
 
 ### UI Access to all methods
 
