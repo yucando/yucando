@@ -21,22 +21,17 @@ module.exports = function(db) {
 
     if (username && password) {
       // Try to authenticate against database
-      console.log("trying username password")
       cursor = db.collection('users').find({"username":username}).limit(1)
       cursor.next(function(err, cred){
         if(err) {console.log("Error!")}
         if(!cred) {res.status(403).send({"err":"Username or password incorrect"})}
-        console.log(cred);
-        console.log(cred.salt);
         var preHash = cred.salt + password;
         var hash = crypto.createHash("sha512").update(preHash).digest("hex")
-        console.log(hash)
         if(hash != cred.hash) {
           res.status(403).send({"err":"Username or password incorrect"})
           return;
         }
         req.authenticatedUser = cred;
-        console.log("Success")
         return next(); // accessible later as req.user
       })
     }
@@ -72,14 +67,13 @@ module.exports = function(db) {
       })
       return;
     } 
-    console.log("Nothing happened")
     return;
   }  
   
   router.post('/register', function(req, res){
     // Check for complete registration data coming in
     username = req.body.username || req.params.username || req.query.username
-    password = req.body.password || req.params.password || req.query.email
+    password = req.body.password || req.params.password || req.query.password
     email = req.body.email || req.params.email || req.query.email
     firstName = req.body.firstName || req.params.firstName || req.query.firstName
     lastName = req.body.lastName || req.params.lastName || req.query.lastName
@@ -89,7 +83,10 @@ module.exports = function(db) {
         if (docs[0]){
           res.json({"error":"Username already exists"})
         } else {
-          db.collection('users').insert({"username":username, "password":password, "email":email, "firstName":firstName, "lastName":lastName})       
+          var salt = crypto.randomBytes(64).toString("hex");
+          var preHash = salt + password;
+          var hash = crypto.createHash("sha512").update(preHash).digest("hex")
+          db.collection('users').insert({"username":username, "hash":hash, "salt" : salt, "email":email, "firstName":firstName, "lastName":lastName})       
           user = {'username': username}
           var token = jwt.sign(user, config.secret, {
               expiresIn: 84600 // expires in 24 hours
@@ -106,7 +103,6 @@ module.exports = function(db) {
   //router.use(isAuthenticated)
   
   router.post('/login', isAuthenticated, function(req,res){
-      console.log('Getting login')
       user = {'username': req.authenticatedUser.username}
 
       var token = jwt.sign(user, config.secret, {

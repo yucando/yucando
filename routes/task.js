@@ -22,22 +22,17 @@ module.exports = function(db) {
 
     if (username && password) {
       // Try to authenticate against database
-      console.log("trying username password")
       cursor = db.collection('users').find({"username":username}).limit(1)
       cursor.next(function(err, cred){
         if(err) {console.log("Error!")}
         if(!cred) {res.status(403).send({"err":"Username or password incorrect"})}
-        console.log(cred);
-        console.log(cred.salt);
         var preHash = cred.salt + password;
         var hash = crypto.createHash("sha512").update(preHash).digest("hex")
-        console.log(hash)
         if(hash != cred.hash) {
           res.status(403).send({"err":"Username or password incorrect"})
           return;
         }
         req.authenticatedUser = cred;
-        console.log("Success")
         return next(); // accessible later as req.user
       })
     }
