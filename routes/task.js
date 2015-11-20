@@ -4,6 +4,7 @@ module.exports = function(db) {
   mongo = require('mongodb')
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js');
+  var crypto = require('crypto');
   //var security = require('../js/security.js');
 
   isAuthenticated = function(req, res, next){
@@ -21,21 +22,22 @@ module.exports = function(db) {
 
     if (username && password) {
       // Try to authenticate against database
-      cursor = db.collection('users').find({"username":username, "password":password})
-      cursor.toArray(function(err, docs){
-        if (docs[0]){
-          req.authenticatedUser = docs[0];
-          return next();
-        } else {
-          res.status(403).send({
-            "success": false,
-            "message": 'Authentication failed'
-          })
+      cursor = db.collection('users').find({"username":username}).limit(1)
+      cursor.next(function(err, cred){
+        if(err) {console.log("Error!")}
+        if(!cred) {res.status(403).send({"err":"Username or password incorrect"})}
+        var preHash = cred.salt + password;
+        var hash = crypto.createHash("sha512").update(preHash).digest("hex")
+        if(hash != cred.hash) {
+          res.status(403).send({"err":"Username or password incorrect"})
+          return;
         }
+        req.authenticatedUser = cred;
+        return next(); // accessible later as req.user
       })
     }
     
-    if (token) {
+    if ((!username || !password) && token) {
       // verifies secret and checks exp
       jwt.verify(token, config.secret, function(err, decoded) {      
         if (err) {
@@ -58,6 +60,13 @@ module.exports = function(db) {
           }) 
         }
       });
+    } 
+    
+    if (!token && !(username && password)){
+      res.status(403).send({
+        "error" : "No credentials supplied"
+      })
+      return;
     } 
   }    
   
