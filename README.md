@@ -40,3 +40,15 @@ Return all tasks URIs as JSON array
 - [ ] `POST /task`
 
 Create a new task, return URI of created record in JSON array
+
+### Authentication
+
+- [ ] JWT authentication
+
+- [ ] Hashing passwords with salt
+
+### UI Access to all methods
+
+- [ ] Include project pane
+
+- [ ] Show points

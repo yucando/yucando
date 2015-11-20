@@ -85,12 +85,10 @@ app.controller("myCtrl",function($scope, $http, $timeout) {
         try {
           console.log("Trying" + response);
           if ("error" in response) {
-            console.log(response.error)
             $scope.registerError = response.error
           }
         } catch (e) {
           $scope.registerError = ""
-          console.log("Response not JSON")
           $scope.jwt_is_valid = true
           $scope.loginError = ""
           setHeaderToken($http, response)
@@ -180,7 +178,6 @@ countdown = function(){
   stopped = $timeout(function() {
     $scope.counter++;   
     $scope.countdown();  
-    $scope.registerError = $scope.registerPasswordCheck + $scope.registerPassword
     angular.forEach($scope.tasks, function(task, index){
       if(task.isActive)
         task.totalTime++
