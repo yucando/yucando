@@ -3,10 +3,10 @@ module.exports = function(db) {
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js')
   var router = require('express').Router()
+  var crypto = require('crypto')
   mongo = require('mongodb')
   
   isAuthenticated = function(req, res, next){
-    
     var authenticatedUser = false;
     // Authenticate
     var token = req.params.token || req.body.token || req.query.token || req.headers['x-access-token'];
@@ -21,21 +21,27 @@ module.exports = function(db) {
 
     if (username && password) {
       // Try to authenticate against database
-      cursor = db.collection('users').find({"username":username, "password":password})
-      cursor.toArray(function(err, docs){
-        if (docs[0]){
-          req.authenticatedUser = docs[0];
-          return next();
-        } else {
-          res.status(403).send({
-            "error":'Authentication failed'
-          })
+      console.log("trying username password")
+      cursor = db.collection('users').find({"username":username}).limit(1)
+      cursor.next(function(err, cred){
+        if(err) {console.log("Error!")}
+        if(!cred) {res.status(403).send({"err":"Username or password incorrect"})}
+        console.log(cred);
+        console.log(cred.salt);
+        var preHash = cred.salt + password;
+        var hash = crypto.createHash("sha512").update(preHash).digest("hex")
+        console.log(hash)
+        if(hash != cred.hash) {
+          res.status(403).send({"err":"Username or password incorrect"})
           return;
         }
+        req.authenticatedUser = cred;
+        console.log("Success")
+        return next(); // accessible later as req.user
       })
     }
     
-    else if (token) {
+    if ((!username || !password) && token) {
       // verifies secret and checks exp
       jwt.verify(token, config.secret, function(err, decoded) {      
         if (err) {
@@ -51,14 +57,23 @@ module.exports = function(db) {
               return next();
             } else {
               res.status(403).send({
-                "error":'Authentication failed'
+                "success": false,
+                "message": 'Authentication failed'
               })
-              return;
             }
           }) 
         }
       });
     } 
+    
+    if (!token && !(username && password)){
+      res.status(403).send({
+        "error" : "No credentials supplied"
+      })
+      return;
+    } 
+    console.log("Nothing happened")
+    return;
   }  
   
   router.post('/register', function(req, res){
@@ -91,13 +106,13 @@ module.exports = function(db) {
   //router.use(isAuthenticated)
   
   router.post('/login', isAuthenticated, function(req,res){
+      console.log('Getting login')
       user = {'username': req.authenticatedUser.username}
 
       var token = jwt.sign(user, config.secret, {
           expiresIn: 84600 // expires in 24 hours
       });
-      res.send(token)
-    
+      res.send(token)    
   })
   
   router.get('/jwt', isAuthenticated, function(req, res){
