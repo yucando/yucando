@@ -2,6 +2,16 @@
 
     // create the module and name it yucandoApp
     var yucandoApp = angular.module('yucandoApp', ['ngRoute']);
+    
+    yucandoApp.controller('globalController', function($scope, $location) {
+        $scope.isNavActive = function(path) {
+          if ($location.path() === path){
+            return "active"
+          } else {
+            return ""
+          }
+        }
+    })
 
 
     
@@ -29,6 +39,12 @@
             .when('/contact', {
                 templateUrl : 'pages/contact.html',
                 controller  : 'contactController'
+            })
+            
+            // route for the api page
+            .when('/api', {
+                templateUrl : 'pages/api.html',
+                controller  : 'apiController'
             });
     });
     
@@ -46,3 +62,7 @@
     yucandoApp.controller('contactController', function($scope) {
         $scope.message = 'Contact us! JK. This is just a demo.';
     });
+/*
+    yucandoApp.controller('apiController', function($scope) {
+        $scope.message = 'Contact us! JK. This is just a demo.';
+    });*/
