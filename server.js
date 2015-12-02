@@ -133,6 +133,7 @@ var SampleApp = function() {
       // Create a static directory to access stylesheets
       self.app.use("/styles",express.static(__dirname + "/styles"));
       self.app.use("/js",express.static(__dirname + "/js"));
+      self.app.use("/pages",express.static(__dirname + "/pages"));
       self.app.use(bodyParser.urlencoded({ extended: false }));
       self.app.use(bodyParser.json());
       self.app.use(bodyParser())

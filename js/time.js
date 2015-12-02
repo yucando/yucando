@@ -1,8 +1,6 @@
-var app = angular.module("myApp", []);
+var yucandoApp = angular.module("yucandoApp");
 
-
-
-app.filter('secondsToDateTime', [function() {
+yucandoApp.filter('secondsToDateTime', [function() {
     return function(seconds) {
         retval = new Date(1970, 0, 1).setSeconds(Math.abs(seconds));
         //retval = retval.toLocaleFormat('HH:mm:ss')
@@ -19,7 +17,8 @@ app.filter('underOrOver', [function() {
   };
 }])*/
 
-app.controller("myCtrl",function($scope, $http, $timeout) {
+yucandoApp.controller("myCtrl",function($scope, $http, $timeout) {
+  console.log("Hooray!");
   $scope.jwt_is_valid = false
   $scope.areCompletedsShowing = false
   
@@ -191,5 +190,35 @@ $scope.countdown = countdown
 $scope.stop = function(){
   $timeout.cancel(stopped);
 } 
+
+
+/* 
+Login
+*/
+
+$(function() {
+    console.log("On click");
+    $('#login-form-link').click(function(e) {
+		$("#login-form").delay(100).fadeIn(100);
+ 		$("#register-form").fadeOut(100);
+		$('#register-form-link').removeClass('active');
+		$(this).addClass('active');
+		e.preventDefault();
+	});
+	$('#register-form-link').click(function(e) {
+		$("#register-form").delay(100).fadeIn(100);
+ 		$("#login-form").fadeOut(100);
+		$('#login-form-link').removeClass('active');
+		$(this).addClass('active');
+		e.preventDefault();
+	});
+
+});
+/*
+End Login
+*/
+
+
+
 
 });
