@@ -40,8 +40,9 @@ button.tracking-off {
 	background-color: #fff;
 	border-color: #fff;
 	text-align:center;
+  cursor:pointer;
 }
-.panel-login>.panel-heading a{
+.panel-login>.panel-heading span{
 	text-decoration: none;
 	color: #666;
 	font-weight: bold;
@@ -50,7 +51,7 @@ button.tracking-off {
 	-moz-transition: all 0.1s linear;
 	transition: all 0.1s linear;
 }
-.panel-login>.panel-heading a.active{
+.panel-login>.panel-heading span.active{
 	color: #029f5b;
 	font-size: 18px;
 }

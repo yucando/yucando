@@ -21,12 +21,12 @@
             // route for the home page
             .when('/', {
                 templateUrl : 'pages/dashboard.html',
-                controller  : 'mainController'
+                controller  : 'myCtrl'
             })
             
             .when ('/home', {
                 templateUrl : 'pages/dashboard.html',
-                controller  : 'mainController'
+                controller  : 'myCtrl'
             })
 
             // route for the about page
