@@ -17,8 +17,9 @@ app.filter('underOrOver', [function() {
   };
 }])*/
 
-yucandoApp.controller("myCtrl",function($scope, $http, $timeout) {
+yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
   console.log("Hooray!");
+  $scope.jwt = globaljwt.getjwt();
   $scope.jwt_is_valid = false
   $scope.areCompletedsShowing = false
   
@@ -51,13 +52,15 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout) {
   
   $scope.login = function() {
     json = {"username" : $scope.username, "password" : $scope.password}
-    var jwt = $http.post('/user/login',json)
-    jwt.error(function (response) {
+    var postdata = $http.post('/user/login',json)
+    postdata.error(function (response) {
       $scope.jwt_is_valid = false
       $scope.password = "";
       $scope.loginError = "Invalid username or password"
     })      
-    jwt.success(function (response) {
+    postdata.success(function (response) {
+      console.log(response)
+      globaljwt.setjwt($http,response)
       $scope.jwt_is_valid = true
       $scope.loginError = ""
       setHeaderToken($http, response)

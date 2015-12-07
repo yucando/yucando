@@ -71,7 +71,7 @@ module.exports = function(db) {
   
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').find({"username":req.authenticatedUser,"_id":o_id})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,"_id":o_id})
     cursor.toArray(function(err, docs){
       if(docs[0]){
         res.json(docs[0]);
