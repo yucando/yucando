@@ -17,8 +17,6 @@ module.exports = function(db) {
     }
     var username = req.params.username || req.params.user || req.body.username || req.body.user || req.query.username || req.query.user;
     var password = req.params.password || req.params.pass || req.body.password || req.body.pass || req.query.password || req.query.pass;
-    //Verify Token
-    //Verify Username
 
     if (username && password) {
       // Try to authenticate against database
@@ -41,7 +39,7 @@ module.exports = function(db) {
       // verifies secret and checks exp
       jwt.verify(token, config.secret, function(err, decoded) {      
         if (err) {
-          return res.json({ success: false, message: 'Invalid token.' });    
+          return res.json({ "error":"Invalid token", "token":token });    
         } else {
           // if everything is good, save to request for use in other routes
           req.decoded = decoded;
@@ -53,8 +51,7 @@ module.exports = function(db) {
               return next();
             } else {
               res.status(403).send({
-                "success": false,
-                "message": 'Authentication failed'
+                "error":'Authentication (token) failed'
               })
             }
           }) 
@@ -74,7 +71,7 @@ module.exports = function(db) {
   
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
-    cursor = db.collection('tasks').find({"username":req.authenticatedUser,"_id":o_id})
+    cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,"_id":o_id})
     cursor.toArray(function(err, docs){
       if(docs[0]){
         res.json(docs[0]);
@@ -124,9 +121,19 @@ module.exports = function(db) {
     res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
   
-  //TODO
-  router.put('/:id', function(req, res){
-    
+  //DONE
+  router.put('/:name', function(req, res){
+    var name = req.params.name;
+    json = {
+      'username' : req.authenticatedUser.username,
+      'name' : name
+    }
+    db.collection('tasks').insert(json)
+    res.json({
+      "success" : true,
+      "username" : req.authenticatedUser.username,
+      "name" : name
+    })
   })
   
   //TODO

@@ -1,55 +1,116 @@
-<pre>
-  ## API endpoints 
-  required for Dr. Villafane's class
+<div class="col-md-6 col-md-offset-3">
+<h1>API</h1>
+<p>
+  You can interface with Yucando programmatically through our REST API. The documentation is shown below.
+  You will need to authenticate each request using either a username:password combination, or you will need
+  to attach a TOKEN *jwt* to your request.
+</p>
 
-  - [x] `GET /task/id/</pre><input type="text"/>:id`<pre>
+<p>Your jwt is:</p>
+<textarea cols="80" rows="3" style='font-family:"Lucida Console", Monaco, monospace' ng-bind="jwt" placeholder="This is empty until you login"></textarea>
+</p>
 
-  Return task with Mongo ID
+<h2>Endpoints</h2>
 
-  - [x] `GET /task/points/:points`
+<p>
+  <form id="login-form" ng-submit="get_task_id_submit()" >
+    GET /task/id/<input type="text" ng-model="get_task_id" placeholder=":id" /><input type="submit" text="submit">
+  </form>
+</p>
+<p>
+  Return task with specified Mongo ID
+</p>
 
+<textarea ng-bind="get_task_id_response" rows="6" cols="80" style='font-family:"Lucida Console", Monaco, monospace'>A big load of text</textarea>
+
+<hr>
+
+<p>
+  GET /task/points/<input type="text" placeholder=":points" />
+</p>
+<p>
   Return all tasks with given number of points
+</p>
 
-  - [x] `GET /task/project/:project`
+<hr>
 
+<p>
+  GET /task/project/<input type="text" placeholder=":project" />
+</p>
+<p>
   Return all tasks in a given project name, where project name is a string
+</p>
 
-  - [x] `GET /task/time_min/:seconds`
+<hr>
 
+<p>
+  GET /task/time_min/<input type="text" placeholder=":seconds" />
+</p>
+<p>
   Return all tasks with durations longer than time_min in seconds
+</p>
 
-  - [x] `GET /task/time_max/:seconds`
+<hr>
 
+<p>
+  GET /task/time_max/<input type="text" placeholder=":seconds" />
+</p>
+<p>
   Return all tasks with durations shorter than time_max in seconds
-   
-  - [x] `DELETE /task/:id`
+</p>
 
+<hr>
+
+<p>
+  <form id="login-form" ng-submit="delete_task_submit()" >
+    DELETE /task/<input type="text" placeholder=":id" ng-model="delete_task_id"/><input type="submit" text="submit">
+  </form> 
+</p>
+<p>
   Delete all tasks with Mongo ID
+</p>
+<textarea ng-bind="delete_task_response" rows="6" cols="80" style='font-family:"Lucida Console", Monaco, monospace'>A big load of text</textarea>
 
-  ### Deferred methods
+<hr>
 
-  - [x] ~~`PUT /task/:id`~~ `PUT /task/:name`
+<h2>Deferred methods</h2>
 
-  Create a task with ~~Mongo ID~~ task name
+<p>
+  <form id="login-form" ng-submit="put_task_submit()" >
+    PUT /task/<input type="text" ng-model="put_task_name" placeholder=":name" />
+    <input type="submit" text="submit" />
+  </form>
+</p>
+<p>
+  Create a task with task name
+</p>
 
-  - [x] `GET /task`
+<textarea ng-bind="put_task_response" rows="6" cols="80" style='font-family:"Lucida Console", Monaco, monospace'>A big load of text</textarea>
 
-  Return all tasks ~~URIs~~ as JSON array
 
-  - [x] `POST /task`
+<hr>
 
-  Create a new task, return ~~URI of~~ created record in JSON array
 
-  ### Authentication
+<p>
+  <form id="login-form" ng-submit="task_submit()" >
+    GET /task <input type="submit" text="submit" />
+  </form>
+</p>
+<p>
+  Return all tasks as JSON array
+</p>
 
-  - [x] JWT authentication
+<textarea ng-bind="task_response" rows="6" cols="80" style='font-family:"Lucida Console", Monaco, monospace'>A big load of text</textarea>
 
-  - [x] Hashing passwords with salt
 
-  ### UI Access to all methods
+<hr>
 
-  - [ ] Include project pane
+<p>
+  POST /task
+</p>
+<p>
+  Create a new task, return created record in JSON array
+</p>
 
-  - [ ] Show points
-
-</pre>
+<h2>Authentication</h2>
+</div>
