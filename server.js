@@ -1,5 +1,6 @@
 #!/bin/env node
 //  OpenShift sample Node application
+http = require('http');
 var express = require('express');
 
 var fs      = require('fs');
@@ -11,6 +12,10 @@ var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+
+
+//var server = http.createServer(express)
+
 
 var testDB
 
@@ -154,12 +159,9 @@ var SampleApp = function() {
           res.setHeader('Content-Type', 'text/html');
           res.send(self.cache_get('index.html') );
       });
-
     //})
-
-
-
-  
+      
+      //server.listen(self.port);
 
     };
 
@@ -174,6 +176,9 @@ var SampleApp = function() {
 
         // Create the express server and routes.
         self.initializeServer();
+        
+
+      
     };
 
 
@@ -182,9 +187,19 @@ var SampleApp = function() {
      */
     self.start = function() {
         //  Start the app on the specific interface (and port).
-        self.app.listen(self.port, self.ipaddress, function() {
+//        server.listen(self.port, self.ipaddress, function() {});
+        var server = self.app.listen(self.port, self.ipaddress, function() {
+
+
             console.log('%s: Node server started on %s:%d ...',
                         Date(Date.now() ), self.ipaddress, self.port);
+        });
+        
+        var io = require('socket.io').listen(server);
+        io.on('connection', function(socket){
+          socket.on('chat message', function(msg){
+            io.emit('chat message', msg);
+          });
         });
     };
 

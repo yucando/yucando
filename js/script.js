@@ -9,9 +9,16 @@
         return jwt;
       }    
       this.setjwt = function($http,passedjwt) {
-        console.log(passedjwt);
         jwt = passedjwt
         $http.defaults.headers.common.Authorization = 'Token ' + jwt
+      }
+      this.isValid = function() {
+        // TODO
+        if (jwt != undefined)
+        {
+            return true;
+        }
+        return false;
       }
     })
 

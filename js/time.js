@@ -2,11 +2,12 @@ var yucandoApp = angular.module("yucandoApp");
 
 yucandoApp.filter('secondsToDateTime', [function() {
     return function(seconds) {
+        //seconds = (seconds - 18000) / 1000
         retval = new Date(1970, 0, 1).setSeconds(Math.abs(seconds));
-        //retval = retval.toLocaleFormat('HH:mm:ss')
+//        retval2 = retval.toLocaleFormat('%A')
         //if (seconds<0) retval = "-" + retval
          //| secondsToDateTime | date:'HH:mm:ss'
-        return retval;
+        return seconds;
     };
 }])
 /*
@@ -18,9 +19,12 @@ app.filter('underOrOver', [function() {
 }])*/
 
 yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
-  console.log("Hooray!");
   $scope.jwt = globaljwt.getjwt();
-  $scope.jwt_is_valid = false
+  $scope.jwt_is_valid = globaljwt.isValid();
+  if ($scope.jwt_is_valid) {
+    setTimeout(function(){
+        loadTasks($http)}, 200);
+  }
   $scope.areCompletedsShowing = false
   
   $scope.punch = function(id){
@@ -59,7 +63,6 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
       $scope.loginError = "Invalid username or password"
     })      
     postdata.success(function (response) {
-      console.log(response)
       globaljwt.setjwt($http,response)
       $scope.jwt_is_valid = true
       $scope.loginError = ""
@@ -111,7 +114,6 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
   }
   
   setHeaderToken = function($http, token) {
-      console.log('Setting rerouting properties')
       $http.defaults.headers.common.Authorization = 'Token ' + token
   }
 
@@ -163,8 +165,6 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
   });
   }
 
-  $scope.firstName = "John";
-  $scope.lastName = "Doe";
   $scope.totalTime = [0,1,2,3,4,5,6,7,8,9,10]
   $scope.counter = 0
   var stopped
@@ -195,12 +195,22 @@ $scope.stop = function(){
 } 
 
 
+  var socket = io();
+  $scope.messages = ['Hello', 'World']
+$scope.sendChatMessage = function() {
+  myMsg = $scope.myMsg
+  socket.emit('chat message', myMsg);
+}
+
+socket.on('chat message', function(msg){
+  $scope.messages.push(msg);
+})
+
 /* 
 Login
 */
 
 $(function() {
-    console.log("On click");
     $('#login-form-link').click(function(e) {
 		$("#login-form").delay(100).fadeIn(100);
  		$("#register-form").fadeOut(100);
