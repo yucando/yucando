@@ -117,7 +117,10 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
       $http.defaults.headers.common.Authorization = 'Token ' + token
   }
 
-
+  $scope.logout = function() {
+    globaljwt.unsetjwt($http);
+    $scope.jwt_is_set = false;
+  }
   
 
   

@@ -21,6 +21,8 @@
       if (jwt || 0 != jwt.length) {
         console.log('setting')
         $http.defaults.headers.common.Authorization = 'Token ' + jwt
+      } else {
+        jwt = undefined;
       }
       this.getjwt = function() {
         return jwt;
@@ -45,7 +47,6 @@
       this.unsetjwt = function($http) {
         document.cookie="token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
         $http.defaults.headers.common.Authorization = null;
-        console.log('You have been logged out');
         jwt = null;
       }
     })
