@@ -146,8 +146,8 @@
         <input type="text" placeholder="Send chat message" ng-model="myMsg"/>
         <input type="submit" value="send">
       </form>
-      <ul>
-        <li ng-repeat="message in messages">
+      <ul id="messages">
+        <li ng-repeat="message in messages track by $index">
           {{message}}
         </li>
       </ul>

@@ -126,3 +126,19 @@ button.tracking-off {
 	background-color: #1CA347;
 	border-color: #1CA347;
 }
+
+#messages { list-style-type: none; margin: 0; padding: 0; }
+#messages li { padding: 5px 10px; }
+#messages li~li {border-top: 1px solid #ddd; }
+/*#messages li:nth-child(odd) { background: #ddd; }*/
+
+#wrap {
+  min-height: 100%;
+  height: auto;
+  margin: 0 auto -50px;
+  padding: 0 0 50px;
+}
+
+body {
+  height: 100%;
+}
