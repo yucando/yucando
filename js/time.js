@@ -23,7 +23,8 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
   $scope.jwt_is_set = globaljwt.isSet($http);
   if ($scope.jwt_is_set) {
     setTimeout(function(){
-        loadTasks($http)}, 200);
+        loadTasks($http); loadFeed($http)}, 200);
+
   }
   $scope.areCompletedsShowing = false
   
@@ -67,7 +68,8 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
       $scope.jwt_is_set = true
       $scope.loginError = ""
       setHeaderToken($http, response)
-      loadTasks($http)    
+      loadTasks($http)  
+      loadFeed($http)  
     })
   }
   
@@ -88,7 +90,6 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
       })      
       jwt.success(function (response) {
         try {
-          console.log("Trying" + response);
           if ("error" in response) {
             $scope.registerError = response.error
           }
@@ -98,6 +99,7 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
           $scope.loginError = ""
           setHeaderToken($http, response)
           loadTasks($http)   
+          loadFeed($http)
         }
       })      
     } else {
@@ -122,7 +124,17 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
     $scope.jwt_is_set = false;
   }
   
-
+  loadFeed = function($http){
+    var url = '/feed'
+    var g = $http.get(url);
+    g.success(function(response){
+      angular.forEach(response, function(message, index) {
+        void(0) // Do nothing for now.
+      })
+      $scope.feed = response;
+      return response;
+    })
+  }
   
   loadTasks = function($http){
   var url = '/task'
@@ -199,7 +211,7 @@ $scope.stop = function(){
 
 
   var socket = io();
-  $scope.messages = ['Hello', 'World']
+  $scope.messages = []
 $scope.sendChatMessage = function() {
   myMsg = $scope.myMsg
   socket.emit('chat message', myMsg);

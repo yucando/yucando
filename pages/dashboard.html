@@ -148,8 +148,9 @@
         <input type="submit" value="send">
       </form>
       <ul id="messages">
-        <li ng-repeat="message in messages track by $index">
-          {{message}}
+        <li ng-repeat="item in feed track by $index">
+          <b>{{item.username}}:</b> {{item.message}} <br/>
+          {{item.timestamp}}
         </li>
       </ul>
     </div>
