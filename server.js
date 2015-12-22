@@ -144,11 +144,14 @@ var SampleApp = function() {
       self.app.use(bodyParser())
       self.app.set('superSecret', config.secret);
       //self.app.use('/api', apiRoutes)
-      task = require('./routes/task.js')(db)
-      self.app.use('/task', task)
-      
-      user = require('./routes/user.js')(db)
-      self.app.use('/user', user)
+  
+      task = require('./routes/task.js')(db);
+      user = require('./routes/user.js')(db);
+      feed = require('./routes/feed.js')(mongoose);
+      self.app.use('/task', task);
+      self.app.use('/feed', feed);
+      self.app.use('/user', user);
+
       
       self.app.get('', function(req, res) {
           res.setHeader('Content-Type', 'text/html');
