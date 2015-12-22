@@ -38,7 +38,7 @@ module.exports = function(db) {
     
     if ((!username || !password) && token) {
       // verifies secret and checks exp
-      jwt.verify(token, config.secret, function(err, decoded) {      
+      jwt.verify(token, config.secret, {algorithms:["HS256"]}, function(err, decoded) {      
         if (err) {
           return res.json({ success: false, message: 'Invalid token.' });    
         } else {
@@ -132,6 +132,10 @@ module.exports = function(db) {
     }
 
   });
+  
+  router.get('/jwt_is_valid', isAuthenticated, function(req, res){
+    res.send('{"jwt_is_valid":true}')
+  })
   
   return router
   

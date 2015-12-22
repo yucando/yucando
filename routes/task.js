@@ -37,7 +37,7 @@ module.exports = function(db) {
     
     if ((!username || !password) && token) {
       // verifies secret and checks exp
-      jwt.verify(token, config.secret, function(err, decoded) {      
+      jwt.verify(token, config.secret, {algorithms:["HS256"]}, function(err, decoded) {      
         if (err) {
           return res.json({ "error":"Invalid token", "token":token });    
         } else {

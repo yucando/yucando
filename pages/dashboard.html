@@ -1,6 +1,6 @@
 <!-- login form -->
 <div class="col-md-12">
-  <div ng-hide="jwt_is_valid" class = "container">
+  <div ng-hide="jwt_is_set" class = "container">
     <div class="col-md-6 col-md-offset-3">
       <div class="panel panel-login" >
         <div class="panel-heading">
@@ -87,9 +87,9 @@
 </div>
 <!-- /login form -->
 
-
-<div ng-show="jwt_is_valid" class = "container">
-  <div class = "row border-between">
+<div class="col-md-12">
+<div ng-show="jwt_is_set" class = "container">
+  <div>
     <!-- left-panel -->
     <div class = "col-md-3">
       <h2>Projects Pane</h2>
@@ -156,3 +156,4 @@
     
   </div> <!-- /row -->
 </div> <!-- /contaier -->
+</div>

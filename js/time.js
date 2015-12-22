@@ -20,8 +20,8 @@ app.filter('underOrOver', [function() {
 
 yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
   $scope.jwt = globaljwt.getjwt();
-  $scope.jwt_is_valid = globaljwt.isValid();
-  if ($scope.jwt_is_valid) {
+  $scope.jwt_is_set = globaljwt.isSet($http);
+  if ($scope.jwt_is_set) {
     setTimeout(function(){
         loadTasks($http)}, 200);
   }
@@ -58,13 +58,13 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
     json = {"username" : $scope.username, "password" : $scope.password}
     var postdata = $http.post('/user/login',json)
     postdata.error(function (response) {
-      $scope.jwt_is_valid = false
+      $scope.jwt_is_set = false
       $scope.password = "";
       $scope.loginError = "Invalid username or password"
     })      
     postdata.success(function (response) {
       globaljwt.setjwt($http,response)
-      $scope.jwt_is_valid = true
+      $scope.jwt_is_set = true
       $scope.loginError = ""
       setHeaderToken($http, response)
       loadTasks($http)    
@@ -82,7 +82,7 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
       }
       var jwt = $http.post('/user/register', json)
       jwt.error(function (response) {
-        $scope.jwt_is_valid = false
+        $scope.jwt_is_sest = false
         $scope.password = "";
         $scope.loginError = "Invalid username or password"
       })      
@@ -94,7 +94,7 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
           }
         } catch (e) {
           $scope.registerError = ""
-          $scope.jwt_is_valid = true
+          $scope.jwt_is_set = true
           $scope.loginError = ""
           setHeaderToken($http, response)
           loadTasks($http)   

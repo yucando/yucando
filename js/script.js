@@ -12,8 +12,7 @@
         jwt = passedjwt
         $http.defaults.headers.common.Authorization = 'Token ' + jwt
       }
-      this.isValid = function() {
-        // TODO
+      this.isSet = function() {
         if (jwt != undefined)
         {
             return true;
