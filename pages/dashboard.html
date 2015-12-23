@@ -149,7 +149,7 @@
       <ul id="messages">
         <li ng-repeat="item in feed track by $index">
           <b>{{item.username}}:</b> {{item.message}} <br/>
-          {{item.timestamp}}
+          {{item.timestamp | feedTime }}
         </li>
       </ul>
     </div>

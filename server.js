@@ -12,12 +12,10 @@ var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var io;
 
 
 //var server = http.createServer(express)
-
-
-var testDB
 
 /**
  *  Define the sample application.
@@ -121,7 +119,6 @@ var SampleApp = function() {
       connectString = 'mongodb://' + mongo_ip + ':' + mongo_port + '/yucando/'
       mongo_url = process.env.OPENSHIFT_MONGODB_DB_URL || connectString
 
-      console.log(mongo_url)
       mongoose.connect(mongo_url)
       var db = mongoose.connection;
       db.on('error', console.error.bind(console, 'connection error:'));
@@ -198,11 +195,16 @@ var SampleApp = function() {
                         Date(Date.now() ), self.ipaddress, self.port);
         });
         
-        var io = require('socket.io').listen(server);
+        io = require('socket.io').listen(server);
         io.on('connection', function(socket){
-          socket.on('chat message', function(msg){
+          /*socket.on('chat message', function(msg){
+            console.log('Got a chat message');
             io.emit('chat message', msg);
-          });
+          });*/
+          self.app.post('/feed', function(req, res, next){
+            io.emit('chat message', { "username" : req.authenticatedUser.username, "timestamp" : Date(), "message": req.body.message})
+            res.send('Success')
+          })
         });
     };
 

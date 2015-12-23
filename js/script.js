@@ -54,9 +54,9 @@
     yucandoApp.controller('globalController', function($rootScope, $scope, $location, $route, $http, globaljwt) {
         $scope.isNavActive = function(path) {
           if ($location.path() === path){
-            return "active"
+            return "active";
           } else {
-            return ""
+            return "";
           }
         }
         

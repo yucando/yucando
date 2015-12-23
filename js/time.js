@@ -10,6 +10,30 @@ yucandoApp.filter('secondsToDateTime', [function() {
         return seconds;
     };
 }])
+
+yucandoApp.filter('feedTime', [function() {
+    return function(date) {
+      t1 = new Date(date)
+      t2 = new Date();
+      seconds = (t2.getTime() - t1.getTime())/1000;
+      switch(true) {
+        case (seconds < 60):
+          return "Less than a minute ago";
+          break;
+        case (seconds >= 60 && seconds < 3600):
+          return Math.floor(seconds/60) + " minutes ago";
+          break;
+        case (seconds >= 3600 && seconds < 60 * 60 * 24):
+          return Math.floor(seconds / 3600) + " hours ago";
+          break;
+        case (seconds >= 60 * 60 * 24):
+          return Math.floor(seconds / (60 * 60 * 24)) + " days ago";
+          break;
+      }
+        //retval = date//.getTime() //- Date().getTime();
+        return retval
+    };
+}])
 /*
 app.filter('underOrOver', [function() {
   return function(seconds) {
@@ -18,7 +42,7 @@ app.filter('underOrOver', [function() {
   };
 }])*/
 
-yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $timeout, globaljwt) {
+yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $timeout, globaljwt) {
   $rootScope.jwt = globaljwt.getjwt();
   $scope.test = "Hello World";
   $rootScope.jwt_is_set = globaljwt.isSet($http);
@@ -211,14 +235,29 @@ $scope.stop = function(){
 
 
   var socket = io();
-  $scope.messages = []
 $scope.sendChatMessage = function() {
-  myMsg = $scope.myMsg
-  socket.emit('chat message', myMsg);
+  
+  json = {"message" : $scope.myMsg}
+  var postdata = $http.post('/feed',json)
+  $scope.myMsg = ""
+  postdata.error(function (response) {
+    alert('Your session has expired. Log out and back in again.')
+  })      
+  postdata.success(function (response) {
+    /* Wait for chat message to come back through socket */
+  })
+  /*socket.emit('chat message', myMsg);*/
 }
-
+$rootScope.mrs = {"message" : 'hi'}
 socket.on('chat message', function(msg){
-  $scope.messages.push(msg);
+
+  $scope.feed = $scope.feed.concat(msg).sort(function(a, b){
+    t1 = new Date(a.timestamp)
+    t2 = new Date(b.timestamp)
+    return (t1.getTime() == t2.getTime() ? 0 : (t1.getTime() > t2.getTime() ? -1: 1))
+  }).slice(0,10);
+  $rootScope.$digest();
+  $rootScope.mrs = msg;
 })
 
 /* 

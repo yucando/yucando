@@ -1,4 +1,4 @@
-module.exports = function(mongoose) {
+module.exports = function(mongoose, io) {
   
   var router = require('express').Router()
   mongo = require('mongodb')
@@ -78,18 +78,18 @@ module.exports = function(mongoose) {
   var Event = mongoose.model('Event', {message: String, timestamp: Date})
   
   router.get('', function(req, res){
-    Message.find({}, function(err, messages) {
+    Message.find({}, null, {sort: '-timestamp', limit:10}, function(err, messages) {
       res.send(messages)
     })
   })
   
-  router.post('', function(req, res){
+  router.post('', function(req, res, next){
     message = new Message({ username : req.authenticatedUser.username, timestamp : Date(), message: req.body.message});
     message.save(function(err , message) {
       if (err) {
         res.send(err);
       } else {
-        res.send('Success: ' + message.display());    
+        next()   
       }
 
     })
