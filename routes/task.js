@@ -70,6 +70,43 @@ module.exports = function(mongoose) {
   
   router.use(isAuthenticated)
   
+  var punchSchema = new mongoose.Schema({ 
+    in: {type: Date, default: null}, 
+    out: {type: Date, default: null}
+  })
+  
+  var taskSchema = mongoose.Schema({
+    name : {
+      type: String,
+      default: "Untitled",
+      validate: {
+        validator: function(v) {
+          return (v != null)
+        },
+        message : 'Title of task cannot be null.'
+      }
+    },
+    timeEstimate : {type : Number, default: null},
+    points : {type : Number, default: null},
+    tags : {type : Array, default: []},
+    due : {type: Date, default: null},
+    defer : {type: Date, default: null},
+    repeat : {type: mongoose.Schema.Types.Mixed, default: false},
+    project : {type: String, default: null},
+    visibility : {
+      type: String, 
+      default: "private",
+      validate: {
+        validator: function(v) {
+          return (v in ["private", "public", "follows", "project_members"]);
+        }, 
+        message : '{VALUE} is not a valid visibility setting.'
+      }
+    },
+    onComplete : {type: mongoose.Schema.Types.Mixed, default: null},
+    punches : [punchSchema]
+  })
+  
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
     cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,"_id":o_id})
