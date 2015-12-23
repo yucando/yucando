@@ -129,7 +129,7 @@ module.exports = function(mongoose) {
   
   var Task = mongoose.model('Task', taskSchema);
   
-  
+
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
     cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,"_id":o_id})
@@ -142,6 +142,7 @@ module.exports = function(mongoose) {
     })
   })
   
+  /*
   router.get('/points/:points', function(req, res){
     var points = parseInt(req.params.points)
     cursor = db.collection('tasks').find({"username":req.authenticatedUser.username,'points':points})
@@ -173,7 +174,7 @@ module.exports = function(mongoose) {
     cursor.toArray(function(err, docs) {
       res.json(docs)
     })    
-  })
+  }) */
   
   router.delete('/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
@@ -182,6 +183,7 @@ module.exports = function(mongoose) {
     res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
   
+  /*
   router.put('/:name', function(req, res){
     var name = req.params.name;
     json = {
@@ -194,7 +196,7 @@ module.exports = function(mongoose) {
       "username" : req.authenticatedUser.username,
       "name" : name
     })
-  })
+  })*/
   
   router.get('', function(req,res){     
         var cursor = db.collection('tasks').find({'username':req.authenticatedUser.username})
@@ -203,7 +205,6 @@ module.exports = function(mongoose) {
         });
     });
   
-  //TODO
   router.post('', function(req, res){
     console.log(req.authenticatedUser.username)
     task = new Task({
@@ -249,6 +250,7 @@ module.exports = function(mongoose) {
     });    
   })
   
+  /*
   router.get('/punch/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
     var json = {}
@@ -283,7 +285,7 @@ module.exports = function(mongoose) {
       
     });
   });
-
+*/
   
   return router
   

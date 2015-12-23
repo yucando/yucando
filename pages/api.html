@@ -25,6 +25,7 @@
 
 <hr>
 
+<!--
 <p>
   GET /task/points/<input type="text" placeholder=":points" />
 </p>
@@ -60,6 +61,7 @@
 </p>
 
 <hr>
+-->
 
 <p>
   <form id="login-form" ng-submit="delete_task_submit()" >
@@ -72,9 +74,7 @@
 <textarea ng-bind="delete_task_response" rows="6" cols="80" style='font-family:"Lucida Console", Monaco, monospace'>A big load of text</textarea>
 
 <hr>
-
-<h2>Deferred methods</h2>
-
+<!--
 <p>
   <form id="login-form" ng-submit="put_task_submit()" >
     PUT /task/<input type="text" ng-model="put_task_name" placeholder=":name" />
@@ -89,7 +89,7 @@
 
 
 <hr>
-
+-->
 
 <p>
   <form id="login-form" ng-submit="task_submit()" >
@@ -109,7 +109,24 @@
   POST /task
 </p>
 <p>
-  Create a new task, return created record in JSON array
+  Create a new task, return created record in JSON array. The JSON payload may consist of the following:
+  <ul>
+  <li><b>taskname</b> (<i>String</i>) The name of your task.
+  <li><b>timeEstimate</b> (<i>Number</i> Number of seconds estimated to complete the task.
+  <li><b>points</b> (<i>Number</i>) Points awarded at completion of task.
+  <li><b>tags</b> (<i>Array of Strings</i>) Tags for searching.
+  <li><b>notes</b> (<i>String</i>) Notes associated with the task.
+  <li><b>due</b> (<i>Date</i>) Date when the task is due.
+  <li><b>defer</b> (<i>Date</i>) Task is invisible until defer date has passed.
+  <li><b>timeCreated</b> (<i>Date</i>) Time at which the task was created. Defaults to current timestamp.
+  <li><b>timeUpdated</b> (<i>Date</i>) Time at which the task was last updated. Defaults to current timestamp.
+  <li><b>timeCompleted</b> (<i>Date</i>) Time at which the task was completed.
+  <li><b>repeat</b> (<i>Mixed</i>) Repeat schema for task. 
+  <li><b>project</b> (<i>String</i>) Project to which this task belongs
+  <li><b>visibility</b> (<i>String</i>) Visibility of task. Can be from a list of public (all can see), private (only you can see), members (only project members can see) and &lt;group&gt;, a group which you specify that has certain privileges.
+  <li><b>onComplete</b> (<i>Mixed</i>) A trigger that is executed when you complete a task, such as notifying a friend by email.
+  <li><b>punches</b> (<i>Array</i>) Time punches logged for the task.
+  </ul>
 </p>
 
 <h2>Authentication</h2>
