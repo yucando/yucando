@@ -89,6 +89,7 @@ module.exports = function(mongoose) {
     timeEstimate : {type : Number, default: null},
     points : {type : Number, default: null},
     tags : {type : Array, default: []},
+    notes : {type : String, default : null},
     due : {type: Date, default: null},
     defer : {type: Date, default: null},
     repeat : {type: mongoose.Schema.Types.Mixed, default: false},
