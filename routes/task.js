@@ -76,7 +76,23 @@ module.exports = function(mongoose) {
   })
   
   var taskSchema = mongoose.Schema({
-    name : {
+    username : {
+      type: String,
+      validate: {
+        validator: function(user) {
+          // Validate that the user exists
+          taskSchema.pre('save', function (next, req) {
+            var Users = mongoose.model('users');
+            Users.findOne({username:req.body.authenticatedUser}, function (err, found){
+              if (found) return next();
+              else return next(new Error({error: "user not found"}))
+            })
+          })
+        },
+        message : 'User does not exist.'
+      }
+    },
+    taskname : {
       type: String,
       default: "Untitled",
       validate: {
@@ -92,6 +108,9 @@ module.exports = function(mongoose) {
     notes : {type : String, default : null},
     due : {type: Date, default: null},
     defer : {type: Date, default: null},
+    timeCreated : {type: Date, default: Date.now},
+    timeUpdated : {type: Date, default: Date.now},
+    timeCompleted : {type: Date, default: null},
     repeat : {type: mongoose.Schema.Types.Mixed, default: false},
     project : {type: String, default: null},
     visibility : {
@@ -105,8 +124,11 @@ module.exports = function(mongoose) {
       }
     },
     onComplete : {type: mongoose.Schema.Types.Mixed, default: null},
-    punches : [punchSchema]
+    punches : {type: [punchSchema], default: []}
   })
+  
+  var Task = mongoose.model('Task', taskSchema);
+  
   
   router.get('/id/:id', function(req, res){
     var o_id = new mongo.ObjectID(req.params.id);
@@ -160,7 +182,6 @@ module.exports = function(mongoose) {
     res.send('Task identified by {"id":'+o_id +'} has been removed')
   })
   
-  //DONE
   router.put('/:name', function(req, res){
     var name = req.params.name;
     json = {
@@ -175,7 +196,6 @@ module.exports = function(mongoose) {
     })
   })
   
-  //TODO
   router.get('', function(req,res){     
         var cursor = db.collection('tasks').find({'username':req.authenticatedUser.username})
         cursor.toArray(function(err, docs) {
@@ -185,35 +205,35 @@ module.exports = function(mongoose) {
   
   //TODO
   router.post('', function(req, res){
-    tokenArray = ("authorization" in req.headers) ? req.headers.authorization.split(' ') : []
-    token = (tokenArray.length == 2) ? tokenArray[1] : undefined
-    jwt.verify(token, config.secret, function(err, decoded) {      
+    console.log(req.authenticatedUser.username)
+    task = new Task({
+      username: req.authenticatedUser.username,
+      taskname: req.body.taskname,
+      timeEstimate: req.body.timeEstimate,
+      points: req.body.points,
+      tags: req.body.tags,
+      notes: req.body.notes,
+      due: req.body.due,
+      defer: req.body.defer,
+      timeCreated: req.body.timeCreated,
+      timeUpdated: req.body.timeUpdated,
+      timeCompleted: req.body.timeCompleted,
+      project: req.body.project,
+      visibility: req.body.visibility,
+      onComplete: req.body.onComplete,
+      punches: req.body.punches
+    })
+
+    task.save(function(err, task) {
       if (err) {
-        //return res.json({ success: false, message: 'Failed to authenticate token.' });    
+        res.send(err);
       } else {
-        // if everything is good, save to request for use in other routes
-        req.decoded = decoded; 
-        user = req.decoded.username
-        name = req.body.name
-        timeEstimate = parseInt(req.body.timeEstimate)
-        json = {
-          'username':req.decoded.username,
-          'name':name,
-          'timeEstimate':timeEstimate
-        }
-        db.collection('tasks').insert(json)
-        
-        //cursor.toArray(function(err, docs) {
-            res.send('Inserted a document')
-        //});
+        res.send(task) 
       }
-    });  
+
+    })
   })
   
-  
-  /************************************************
-   * Tasks not required for Dr. Villafane         
-   ************************************************/
   router.post('/complete/:id', function(req, res) {
     var o_id = new mongo.ObjectID(req.params.id);
     var json = {}

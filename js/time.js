@@ -132,7 +132,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   }
   
   $scope.createTask = function() {
-    json = {"name" : $scope.name, "timeEstimate" : $scope.timeEstimate}
+    json = {"taskname" : $scope.taskname, "timeEstimate" : $scope.timeEstimate}
     var g = $http.post('/task', json)
     g.success(function(response){
       loadTasks($http)
@@ -164,6 +164,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   var url = '/task'
   var g = $http.get(url);
   g.success(function (response) {
+    console.log(response);
     angular.forEach(response, function(task, index) {
       task.totalTime = 0
       task.isActive = false
@@ -172,7 +173,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
       } else {
         task.isIncomplete = true
       }
-      angular.forEach(task.punches, function(punch, index){
+      /*angular.forEach(task.punches, function(punch, index){
           var d_in
           var d_out
           if ("in" in punch) {
@@ -195,7 +196,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
             task.totalTime += Math.round(punch.duration)
           }
           
-      })
+      })*/
 
 
     });
