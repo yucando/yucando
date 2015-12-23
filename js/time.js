@@ -18,10 +18,11 @@ app.filter('underOrOver', [function() {
   };
 }])*/
 
-yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
-  $scope.jwt = globaljwt.getjwt();
-  $scope.jwt_is_set = globaljwt.isSet($http);
-  if ($scope.jwt_is_set) {
+yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $timeout, globaljwt) {
+  $rootScope.jwt = globaljwt.getjwt();
+  $scope.test = "Hello World";
+  $rootScope.jwt_is_set = globaljwt.isSet($http);
+  if ($rootScope.jwt_is_set) {
     setTimeout(function(){
         loadTasks($http); loadFeed($http)}, 200);
 
@@ -33,8 +34,6 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
     var url = '/task/punch/' + id
     var g = $http.get(url);
     $scope.tasks[index].isActive = !$scope.tasks[index].isActive
-    //console.log($scope.tasks[index])
-    //console.log(index)// + ' ' + $scope.tasks[index].isActive)
   }
   
   $scope.complete = function(id) {
@@ -59,13 +58,14 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
     json = {"username" : $scope.username, "password" : $scope.password}
     var postdata = $http.post('/user/login',json)
     postdata.error(function (response) {
-      $scope.jwt_is_set = false
+      $rootScope.jwt_is_set = false
       $scope.password = "";
       $scope.loginError = "Invalid username or password"
     })      
     postdata.success(function (response) {
       globaljwt.setjwt($http,response)
-      $scope.jwt_is_set = true
+      $scope.$emit('login')
+      $rootScope.jwt_is_set = true;
       $scope.loginError = ""
       setHeaderToken($http, response)
       loadTasks($http)  
@@ -84,7 +84,7 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
       }
       var jwt = $http.post('/user/register', json)
       jwt.error(function (response) {
-        $scope.jwt_is_sest = false
+        $rootScope.jwt_is_set = false
         $scope.password = "";
         $scope.loginError = "Invalid username or password"
       })      
@@ -95,7 +95,7 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
           }
         } catch (e) {
           $scope.registerError = ""
-          $scope.jwt_is_set = true
+          $rootScope.jwt_is_set = true
           $scope.loginError = ""
           setHeaderToken($http, response)
           loadTasks($http)   
@@ -121,7 +121,7 @@ yucandoApp.controller("myCtrl",function($scope, $http, $timeout, globaljwt) {
 
   $scope.logout = function() {
     globaljwt.unsetjwt($http);
-    $scope.jwt_is_set = false;
+    $rootScope.jwt_is_set = false;
   }
   
   loadFeed = function($http){

@@ -19,7 +19,6 @@
     yucandoApp.service('globaljwt', function($http){
       jwt = getCookie('token')
       if (jwt || 0 != jwt.length) {
-        console.log('setting')
         $http.defaults.headers.common.Authorization = 'Token ' + jwt
       } else {
         jwt = undefined;
@@ -47,12 +46,12 @@
       this.unsetjwt = function($http) {
         document.cookie="token=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
         $http.defaults.headers.common.Authorization = null;
-        jwt = null;
+        jwt = undefined;
       }
     })
 
     
-    yucandoApp.controller('globalController', function($scope, $location) {
+    yucandoApp.controller('globalController', function($rootScope, $scope, $location, $route, $http, globaljwt) {
         $scope.isNavActive = function(path) {
           if ($location.path() === path){
             return "active"
@@ -60,9 +59,14 @@
             return ""
           }
         }
+        
+        $rootScope.jwt_is_set = globaljwt.getjwt();
+        
+        $scope.logout = function() {
+          globaljwt.unsetjwt($http);
+          $route.reload();
+        }
     })
-
-
     
     yucandoApp.config(function($routeProvider) {
         $routeProvider
@@ -142,7 +146,6 @@
       
       $scope.put_task_submit = function() {
         var postdata = $http.put('/task/' + $scope.put_task_name)
-        console.log($scope.put_task_name)
         postdata.error(function (response) {
           /*
             Error handling

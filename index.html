@@ -45,6 +45,9 @@
           <li ng-class="isNavActive('/contact')"><a href="#contact">Contact</a></li>
           <li ng-class="isNavActive('/api')"><a href="#api">API</a></li>
         </ul>
+        <ul class="nav navbar-nav pull-right">
+          <li ng-show="jwt_is_set" style="float:right;" ng-click="logout()"><a href="#home">Logout</a></li>
+        </ul>
       </div>
   <!--  </div> -->
   </nav>
