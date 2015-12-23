@@ -94,7 +94,7 @@
     <div class = "col-md-3">
       <h2>Filters</h2>
       <ul>
-        <li ng-repeat="tag in tagList">{{tag.tagName}}</li>
+        <li ng-repeat="tag in tagList"><a href="#home" ng-click="updateTaskVisibility(tag.tagName)">{{tag.tagName}}</a></li>
       </ul>
     </div> 
     <!-- /col-md-6 -->
@@ -121,7 +121,7 @@
 
       <!--{{ firstName + " " + lastName }} is welcome here.-->
         <ul>
-          <li ng-repeat="task in tasks" ng-show = "task.isIncomplete || areCompletedsShowing">
+          <li ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)">
             {{task.taskname}} - {{(task.timeEstimate - task.totalTime ) | secondsToDateTime}}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete)
             <!-- <ul> -->
             <!--  <li ng-show = "areTimestampsShowing" ng-repeat="punch in task.punches">

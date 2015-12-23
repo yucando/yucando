@@ -163,6 +163,16 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   $scope.tags = [];
   $scope.tagList = [];
   
+  $scope.updateTaskVisibility = function(tag) {
+    angular.forEach($scope.tasks, function(task, index){
+      if (task.tags.indexOf(tag) > -1) {
+        task.isVisible = true;
+      } else {
+        task.isVisible = false;
+      }
+    })
+  }
+  
   loadTasks = function($http){
   var url = '/task'
   var g = $http.get(url);
@@ -170,6 +180,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     angular.forEach(response, function(task, index) {
       task.totalTime = 0
       task.isActive = false
+      task.isVisible = true;
       if ('timeCompleted' in task) {
         task.isIncomplete = false
       } else {
@@ -184,7 +195,6 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
           $scope.tags[tag].push(index)
         }
       })
-      console.log($scope.tagList)
       /*angular.forEach(task.punches, function(punch, index){
           var d_in
           var d_out
