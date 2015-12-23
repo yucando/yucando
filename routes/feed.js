@@ -1,7 +1,7 @@
-module.exports = function(mongoose, io) {
+module.exports = function(mongoose) {
   
   var router = require('express').Router()
-  mongo = require('mongodb')
+  var mongo = require('mongodb');
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
   var config = require('../config.js');
   var crypto = require('crypto');

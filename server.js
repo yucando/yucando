@@ -142,8 +142,8 @@ var SampleApp = function() {
       self.app.set('superSecret', config.secret);
       //self.app.use('/api', apiRoutes)
   
-      task = require('./routes/task.js')(db);
-      user = require('./routes/user.js')(db);
+      task = require('./routes/task.js')(mongoose);
+      user = require('./routes/user.js')(mongoose);
       feed = require('./routes/feed.js')(mongoose);
       self.app.use('/task', task);
       self.app.use('/feed', feed);

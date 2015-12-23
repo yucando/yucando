@@ -1,10 +1,11 @@
-module.exports = function(db) {
-  var bodyParser = require('body-parser')
+module.exports = function(mongoose) {
+  var bodyParser = require('body-parser');
   var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
-  var config = require('../config.js')
-  var router = require('express').Router()
-  var crypto = require('crypto')
-  mongo = require('mongodb')
+  var config = require('../config.js');
+  var router = require('express').Router();
+  var crypto = require('crypto');
+  var mongo = require('mongodb');
+  var db = mongoose.connection; 
   
   isAuthenticated = function(req, res, next){
     var authenticatedUser = false;
