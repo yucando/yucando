@@ -160,11 +160,13 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     })
   }
   
+  $scope.tags = [];
+  $scope.tagList = [];
+  
   loadTasks = function($http){
   var url = '/task'
   var g = $http.get(url);
   g.success(function (response) {
-    console.log(response);
     angular.forEach(response, function(task, index) {
       task.totalTime = 0
       task.isActive = false
@@ -173,6 +175,16 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
       } else {
         task.isIncomplete = true
       }
+      angular.forEach(task.tags, function(tag, index){
+        if (tag in $scope.tags) {
+          $scope.tags[tag].push(index)
+        } else {
+          $scope.tagList = $scope.tagList.concat({"tagName" : tag})
+          $scope.tags[tag] = [];
+          $scope.tags[tag].push(index)
+        }
+      })
+      console.log($scope.tagList)
       /*angular.forEach(task.punches, function(punch, index){
           var d_in
           var d_out

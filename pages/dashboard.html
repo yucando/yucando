@@ -92,12 +92,9 @@
   <div>
     <!-- left-panel -->
     <div class = "col-md-3">
-      <h2>Projects Pane</h2>
+      <h2>Filters</h2>
       <ul>
-        <li><a href="#home">Senior Design Project</a></li>
-        <li><a href="#home">Programming yucando.it</a></li>
-        <li><a href="#home">Grad School Applications</a></li>
-        <li><a href="#home">Solve Turbulent Flow</a></li>
+        <li ng-repeat="tag in tagList">{{tag.tagName}}</li>
       </ul>
     </div> 
     <!-- /col-md-6 -->
