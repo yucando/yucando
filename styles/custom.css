@@ -139,11 +139,12 @@ ul.tasks li {
   padding: 5px 10px;
   display: block;
 }
-ul.tasks > li~li {border-top: 1px solid #ddd;}
-ul.tasks > li > div.tasktitle {float:left;}
-ul.tasks > li > div.tags {float:right;}
 
-ul.tasks > li > div.progress {margin: 0;}
+
+div.tasks > div.progress {margin: 0;}
+div.tasks.well {
+  background: rgb(255, 255, 255);
+}
 
 #messages { list-style-type: none; margin: 0; padding: 0; }
 #messages li { padding: 5px 10px; }

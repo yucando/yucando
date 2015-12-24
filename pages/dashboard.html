@@ -153,11 +153,7 @@
         <hr>
 
 
-
-
-
-        <ul class="tasks">
-          <li ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)" ng-mouseover="task.isExpanded=true" ng-mouseout="task.isExpanded=false">        
+          <div class="well tasks" ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)" ng-mouseover="task.isExpanded=true" ng-mouseout="task.isExpanded=false">        
             <div class="row row-negative-bottom-margin">
               <div class="col-sm-6"><b>{{task.taskname}}</b></div>
               <div class="col-sm-6">
@@ -189,8 +185,7 @@
                
             <!--   -->
             <!-- </ul> -->
-          </li>
-        </ul>
+          </div>
       </div>
     </div>
     <!-- /middle panel -->
