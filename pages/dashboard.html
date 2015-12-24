@@ -201,8 +201,13 @@
             <ul class="list-group" ng-show="task.isExpanded">
             <li class="list-group-item">
               <div class="row">
-                <div class="col-sm-6"><i>{{arrayToString(task.tags)}}</i></div>
-                <div class="col-sm-6">Time out of total</div>
+                <div class="col-sm-6">
+                  <b>Tags: </b><i>{{arrayToString(task.tags)}}</i>
+                </div>
+                <div class="col-sm-6" align="right">
+                  {{task.totalTime | secondsToDateTime}} out of {{task.timeEstimate | secondsToDateTime}}<br/>
+                  {{task.timeEstimate - task.totalTime | secondsToDateTime}} {{task.timeEstimate - task.totalTime | remainingOrOver}}
+                </div>
               </div>
 
               <!--{{(task.timeEstimate - task.totalTime ) | secondsToDateTime}}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete) -->

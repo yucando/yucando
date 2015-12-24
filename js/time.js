@@ -1,13 +1,34 @@
 var yucandoApp = angular.module("yucandoApp");
 
 yucandoApp.filter('secondsToDateTime', [function() {
+  
+    function pad(integer){
+      string = '00' + integer;
+      return string.substr(string.length - 2);
+      
+    }
+    
     return function(seconds) {
-        //seconds = (seconds - 18000) / 1000
-        retval = new Date(1970, 0, 1).setSeconds(Math.abs(seconds));
-//        retval2 = retval.toLocaleFormat('%A')
-        //if (seconds<0) retval = "-" + retval
-         //| secondsToDateTime | date:'HH:mm:ss'
-        return seconds;
+        seconds = Math.abs(seconds);
+        minutes = Math.floor(seconds / 60);
+        hours = Math.floor(seconds / 3600);
+        seconds = seconds % 60;
+        if (hours) {
+          retval = hours + ':' + pad(minutes) + ':' + pad(seconds);
+        } else if (minutes) {
+          retval = minutes + ':' + pad(seconds)
+        } else {
+          retval = ':' + pad(seconds);
+        }
+        return retval;
+    };
+}])
+
+yucandoApp.filter('remainingOrOver', [function() {
+    return function(seconds) {
+        if (seconds > 0)
+          return "remaining";
+        else return "over";
     };
 }])
 
