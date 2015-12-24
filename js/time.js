@@ -213,6 +213,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
       task.isActive = false
       task.isVisible = true;
       task.isExpanded = false;
+
       if ('timeCompleted' in task) {
         task.isIncomplete = false
       } else {
@@ -227,7 +228,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
           $scope.tagTask[tag].push(index)
         }
       })
-      /*angular.forEach(task.punches, function(punch, index){
+      angular.forEach(task.punches, function(punch, index){
           var d_in
           var d_out
           if ("in" in punch) {
@@ -248,9 +249,10 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
             punch.duration = (d_out - d_in) / 1000
             //task.totalTime += punch.duration
             task.totalTime += Math.round(punch.duration)
+            task.percentage = 100 * task.totalTime / task.timeEstimate;
           }
           
-      })*/
+      })
 
 
     });
@@ -277,6 +279,7 @@ countdown = function(){
     angular.forEach($scope.tasks, function(task, index){
       if(task.isActive)
         task.totalTime++
+        task.percentage = 100* task.totalTime / task.timeEstimate;
     }) 
   }, 1000);  
 }

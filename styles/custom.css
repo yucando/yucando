@@ -150,6 +150,14 @@ ul.tasks > li > div.progress {margin: 0;}
 #messages li~li {border-top: 1px solid #ddd; }
 /*#messages li:nth-child(odd) { background: #ddd; }*/
 
+.row-bottom-margin { 
+  margin-bottom:0px;
+  padding-bottom:0px; 
+}
+
+.row-negative-bottom-margin {
+  margin-bottom:-5px;
+}
 
 #wrap {
   min-height: 100%;
