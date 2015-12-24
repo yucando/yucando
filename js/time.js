@@ -52,6 +52,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
 
   }
   $scope.areCompletedsShowing = false
+  $scope.isAddTask = false;
   
   $scope.punch = function(id){
     index = getTaskIndex(id)
@@ -131,12 +132,32 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     }    
   }
   
+  parseTags = function(tagString) {
+    tags = tagString.split(',') // Explode into array
+    angular.forEach(tags, function(tag){
+      tag = tag.trim(); // Remove white space
+    })
+    return tags
+  }
+  
   $scope.createTask = function() {
-    json = {"taskname" : $scope.taskname, "timeEstimate" : $scope.timeEstimate}
-    var g = $http.post('/task', json)
-    g.success(function(response){
-      loadTasks($http)
-    });
+    if ($scope.taskname) {
+      json = {
+        "taskname" : $scope.taskname, 
+        "timeEstimate" : $scope.timeEstimate,
+        "points" : $scope.points,
+        "tags" : parseTags($scope.tags),
+        "notes" : $scope.notes
+      }
+      var g = $http.post('/task', json)
+      g.success(function(response){
+        loadTasks($http)
+      });
+    } else {
+      console.log('No name specified')
+      return
+    }
+
   }
   
   setHeaderToken = function($http, token) {
@@ -160,8 +181,8 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     })
   }
   
-  $scope.tags = [];
-  $scope.tagList = [];
+  $scope.tagTask = []; // I am an awful person for these
+  $scope.tagList = []; // two lines of code. 
   
   $scope.updateTaskVisibility = function(tag) {
     angular.forEach($scope.tasks, function(task, index){
@@ -187,12 +208,12 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
         task.isIncomplete = true
       }
       angular.forEach(task.tags, function(tag, index){
-        if (tag in $scope.tags) {
-          $scope.tags[tag].push(index)
+        if (tag in $scope.tagTask) {
+          $scope.tagTask[tag].push(index)
         } else {
           $scope.tagList = $scope.tagList.concat({"tagName" : tag})
-          $scope.tags[tag] = [];
-          $scope.tags[tag].push(index)
+          $scope.tagTask[tag] = [];
+          $scope.tagTask[tag].push(index)
         }
       })
       /*angular.forEach(task.punches, function(punch, index){

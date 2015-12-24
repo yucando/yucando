@@ -81,13 +81,15 @@ module.exports = function(mongoose) {
       validate: {
         validator: function(user) {
           // Validate that the user exists
-          taskSchema.pre('save', function (next, req) {
+          return true;
+          // The following code has some errors...
+          /*taskSchema.pre('save', function (next, req) {
             var Users = mongoose.model('users');
             Users.findOne({username:req.body.authenticatedUser}, function (err, found){
               if (found) return next();
               else return next(new Error({error: "user not found"}))
             })
-          })
+          }) */
         },
         message : 'User does not exist.'
       }

@@ -91,8 +91,10 @@
 <div ng-show="jwt_is_set" class = "container">
   <div>
     <!-- left-panel -->
+
     <div class = "col-md-3">
-      <h2>Filters</h2>
+      <p>Filter by tags</p>
+      <hr>
       <ul>
         <li ng-repeat="tag in tagList"><a href="#home" ng-click="updateTaskVisibility(tag.tagName)">{{tag.tagName}}</a></li>
       </ul>
@@ -101,25 +103,55 @@
     
     <!-- middle panel -->
     <div class = "col-md-6">
-      <h2>Tasks Pane</h2>
-      <div>
+      <div ng-show="isAddTask">
         <!-- Create task form -->
         <form id="login-form" ng-submit="createTask()" method="post" role="form" style="display: block;">
           <div class="form-group">
-            <input type="text" ng-model="taskname" name="taskname" id="name" tabindex="1" class="form-control" placeholder="Task name" value="">
+            <input type="text" ng-model="taskname" name="taskname" id="name" tabindex="1" class="form-control" placeholder="task name" value="">
           </div>
           <div class="form-group">
-            <input type="text" ng-model="timeEstimate" name="timeEstimate" id="timeEstimate" tabindex="2" class="form-control" placeholder="Estimated time in seconds">
+            <div class="row">
+              <div class="col-sm-5">
+                <input type="text" ng-model="timeEstimate" name="timeEstimate" id="timeEstimate" tabindex="2" class="form-control" placeholder="time estimate (seconds)">
+              </div>
+              <div class="col-sm-2">
+                <input type="text" ng-model="points" name="points" id="points" tabindex="3" class="form-control" placeholder="points">
+              </div>
+              <div class="col-sm-5">
+                <input type="text" ng-model="tags" name="tags" id="tags" tabindex="4" class="form-control" placeholder="tags, separated by commas">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm-12">
+                <input type="text" rows="4" ng-model="notes" name="notes" id="notes" tabindex="5" class="form-control" placeholder="notes">
+              </div>
+            </div>
           </div>
           <div>
-            <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Create Task">
-          </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <input type="submit" ng-click="isAddTask=false" name="create-task-submit" id="create-task-submit" tabindex="4" class="form-control btn btn-login" value="Create Task">
+              </div>
         </form>
+              <div class="col-sm-6">
+                <button ng-click="isAddTask=false" tabindex="5" class="form-control btn btn-login">Cancel</button>
+              </div>
+            </div>
+          </div>
         <!-- /create task form -->
       <!-- <button ng-click="areTimestampsShowing = !areTimestampsShowing">Toggle Timestamps</button> -->
-      <button ng-click="areCompletedsShowing = !areCompletedsShowing">Toggle Completed Tasks</button>
 
-      <!--{{ firstName + " " + lastName }} is welcome here.-->
+      
+      </div>
+      <div ng-hide="isAddTask">
+        <div align=center>
+          <button ng-click="isAddTask = true">Add a task</button>
+          <button ng-click="areCompletedsShowing = !areCompletedsShowing">Toggle Completed Tasks</button>
+        </div>
+        <hr>
+
         <ul>
           <li ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)">
             {{task.taskname}} - {{(task.timeEstimate - task.totalTime ) | secondsToDateTime}}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete)
@@ -138,7 +170,6 @@
 
     <!-- right panel -->
     <div class = "col-md-3">
-      <h2>Social Pane</h2>
       <form id="chat-broadcast" ng-submit="sendChatMessage()">
         <input type="text" placeholder="Send chat message" ng-model="myMsg"/>
         <input type="submit" value="send">
