@@ -142,7 +142,7 @@ ul.tasks li {
 
 
 div.tasks > div.progress {margin: 0;}
-div.tasks.well {
+div.tasks.panel {
   background: rgb(255, 255, 255);
 }
 

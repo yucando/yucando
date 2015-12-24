@@ -68,6 +68,13 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     $scope.tasks[index].isIncomplete = false
   }
   
+  $scope.markAsIncomplete = function(id) {
+    index = getTaskIndex(id);
+    var url = 'task/uncomplete/' + id;
+    var g = $http.post(url);
+    $scope.tasks[index].isIncomplete = true;
+  }
+  
   getTaskIndex = function(id) {
     var retval = -1
     angular.forEach($scope.tasks, function(task, index){
@@ -213,6 +220,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
       task.isActive = false
       task.isVisible = true;
       task.isExpanded = false;
+      task.isMouseOver = false;
 
       if ('timeCompleted' in task) {
         task.isIncomplete = false

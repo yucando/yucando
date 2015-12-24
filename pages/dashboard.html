@@ -153,30 +153,69 @@
         <hr>
 
 
-          <div class="well tasks" ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)" ng-mouseover="task.isExpanded=true" ng-mouseout="task.isExpanded=false">        
-            <div class="row row-negative-bottom-margin">
-              <div class="col-sm-6"><b>{{task.taskname}}</b></div>
-              <div class="col-sm-6">
-                <div class="progress">
-                  <div class="progress-bar" role="progressbar" aria-valuenow={{task.percentage}}
-                  aria-valuemin="0" aria-valuemax="100" style={{progressBar(task.percentage)}}>{{task.percentage}}%
+          <div class="panel panel-default tasks" ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)" ng-mouseover="task.isMouseOver=true" ng-mouseout="task.isMouseOver=false">        
+            <div class="panel-heading">
+              <div class="row row-negative-bottom-margin">
+                <div class="col-sm-6"><b>{{task.taskname}}</b></div>
+                <div class="col-sm-6">
+                  <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow={{task.percentage}}
+                    aria-valuemin="0" aria-valuemax="100" style={{progressBar(task.percentage)}}>{{task.percentage}}%
+                    </div>
                   </div>
                 </div>
               </div> 
             </div>
-            <div class="row row-bottom-margin" ng-show="task.isExpanded">
-              <div class="col-sm-6"><i>{{arrayToString(task.tags)}}</i></div>
-              <div class="col-sm-6">Time out of total</div>
+            <div class="row panel-body" align="center" ng-show="task.isExpanded || task.isMouseOver">
+              <button ng-hide="task.isExpanded" type="button" class="btn btn-info" ng-click="task.isExpanded=true">
+                <span class="glyphicon glyphicon-plus"></span> 
+                More
+              </button>
+              
+              <button ng-show="task.isExpanded" type="button" class="btn btn-info" ng-click="task.isExpanded=false">
+                <span class="glyphicon glyphicon-minus"></span> 
+                Less
+              </button>
+
+              <button ng-hide="task.isActive" type="button" class="btn btn-info" ng-click="punch(task._id)">
+                <span class="glyphicon glyphicon-play"></span> 
+                Start
+              </button>
+              
+              <button ng-show="task.isActive" type="button" class="btn btn-info" ng-click="punch(task._id)">
+                <span class="glyphicon glyphicon-stop"></span> 
+                Stop
+              </button>
+
+              <button ng-show="task.isIncomplete" type="button" class="btn btn-info" ng-click="complete(task._id)">
+                <span class="glyphicon glyphicon-ok"></span> 
+                Complete
+              </button>
+              
+              <button ng-hide="task.isIncomplete" type="button" class="btn btn-info" ng-click="markAsIncomplete(task._id)">
+                <span class="glyphicon glyphicon-inbox"></span> 
+                Mark as Incomplete
+              </button>
+              
             </div>
-            
-            <div class="row row-bottom-margin" ng-show="task.isExpanded">
+            <ul class="list-group" ng-show="task.isExpanded">
+            <li class="list-group-item">
+              <div class="row">
+                <div class="col-sm-6"><i>{{arrayToString(task.tags)}}</i></div>
+                <div class="col-sm-6">Time out of total</div>
+              </div>
+
               <!--{{(task.timeEstimate - task.totalTime ) | secondsToDateTime}}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete) -->
-              <div class="col-sm-6"><button ng-class="task.isActive ? 'tracking-on' : 'tracking-off'" ng-click="punch(task._id)">Punch</button></div>
-              <div class="col-sm-6">Points: {{task.points}}<button ng-click="complete(task._id)">Complete</button></div>
-           </div>
-           <div class="row row-bottom-margin" ng-show="task.isExpanded">
-             <div class="col-sm-12">{{task.notes}}</div>
-           </div>
+              <div class="row">
+                <!-- <div class="col-sm-6"><button ng-class="task.isActive ? 'tracking-on' : 'tracking-off'" ng-click="punch(task._id)">Punch</button></div> -->
+                <div class="col-sm-6">Points: {{task.points}} <!-- <button ng-click="complete(task._id)">Complete</button> --> </div>
+              </div>
+            </li>
+
+            <li class="list-group-item">
+              {{task.notes}}
+            </li>
+           </ul>
             <!-- <br/>{{task.notes}} -->
             <!-- <ul> --> 
             <!--  <li ng-show = "areTimestampsShowing" ng-repeat="punch in task.punches">
