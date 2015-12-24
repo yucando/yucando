@@ -194,6 +194,16 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     })
   }
   
+  $scope.fill = "70"
+  
+  $scope.progressBar = function(percentage){
+    return "width:" + percentage + "%"
+  }
+  
+  $scope.arrayToString = function(array){
+    return array.join(", ")
+  }
+  
   loadTasks = function($http){
   var url = '/task'
   var g = $http.get(url);
@@ -202,6 +212,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
       task.totalTime = 0
       task.isActive = false
       task.isVisible = true;
+      task.isExpanded = false;
       if ('timeCompleted' in task) {
         task.isIncomplete = false
       } else {

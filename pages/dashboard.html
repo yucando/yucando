@@ -152,15 +152,40 @@
         </div>
         <hr>
 
-        <ul>
-          <li ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)">
-            {{task.taskname}} - {{(task.timeEstimate - task.totalTime ) | secondsToDateTime}}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete)
-            <!-- <ul> -->
+
+
+
+
+        <ul class="tasks">
+          <li ng-repeat="task in tasks" ng-show = "task.isVisible && (task.isIncomplete || areCompletedsShowing)" ng-mouseover="task.isExpanded=true" ng-mouseout="task.isExpanded=false">        
+            <div class="row">
+              <div class="col-sm-6"><b>{{task.taskname}}</b></div>
+              <div class="col-sm-6">
+                <div class="progress">
+                  <div class="progress-bar" role="progressbar" aria-valuenow={{fill}}
+                  aria-valuemin="0" aria-valuemax="100" style={{progressBar(fill)}}>{{fill}}%
+                  </div>
+                </div>
+              </div> 
+            </div>
+            <div class="row" ng-show="task.isExpanded">
+              <div class="col-sm-6"><i>{{arrayToString(task.tags)}}</i></div>
+              <div class="col-sm-6" align="right">{{task.points}}<button ng-click="complete(task._id)">Complete</button></div>"
+            </div>
+
+
+            <div ng-show="task.isExpanded" class="notes">{{task.notes}}</div>
+              <!--<div id="progress">{{(task.timeEstimate - task.totalTime ) | secondsToDateTime}}  ({{100* task.totalTime / task.timeEstimate | number : 2}}% complete)</div>
+              <p id="taskHeader">{{task.taskname}}</p>
+ 
+            <div class="taskTags">{{task.tags}}</div> -->
+            <!-- <br/>{{task.notes}} -->
+            <!-- <ul> --> 
             <!--  <li ng-show = "areTimestampsShowing" ng-repeat="punch in task.punches">
                 {{punch.in}} - {{punch.out}} -- {{punch.duration}}
               </li> -->
               <!-- <button ng-class="task.isActive ? 'tracking-on' : 'tracking-off'" ng-click="punch(task._id)">Punch</button> -->
-              <button ng-click="complete(task._id)">Complete</button>
+            <!--   -->
             <!-- </ul> -->
           </li>
         </ul>

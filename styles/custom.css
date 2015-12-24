@@ -1,3 +1,6 @@
+
+
+
 .border-between > [class*='col-']:before {
  background: #e3e3e3;
  bottom: 0;
@@ -127,10 +130,26 @@ button.tracking-off {
 	border-color: #1CA347;
 }
 
+#tasks {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+ul.tasks li {
+  padding: 5px 10px;
+  display: block;
+}
+ul.tasks > li~li {border-top: 1px solid #ddd;}
+ul.tasks > li > div.tasktitle {float:left;}
+ul.tasks > li > div.tags {float:right;}
+
+ul.tasks > li > div.progress {margin: 0;}
+
 #messages { list-style-type: none; margin: 0; padding: 0; }
 #messages li { padding: 5px 10px; }
 #messages li~li {border-top: 1px solid #ddd; }
 /*#messages li:nth-child(odd) { background: #ddd; }*/
+
 
 #wrap {
   min-height: 100%;
