@@ -237,6 +237,51 @@ module.exports = function(mongoose) {
     })
   })
   
+  router.post('/:id', function(req, res) {
+    json = {
+      username: req.authenticatedUser.username,
+      taskname: req.body.taskname,
+      timeEstimate: req.body.timeEstimate,
+      points: req.body.points,
+      tags: req.body.tags,
+      notes: req.body.notes,
+      due: req.body.due,
+      defer: req.body.defer,
+      timeCreated: req.body.timeCreated,
+      timeUpdated: req.body.timeUpdated,
+      timeCompleted: req.body.timeCompleted,
+      project: req.body.project,
+      visibility: req.body.visibility,
+      onComplete: req.body.onComplete,
+      punches: req.body.punches
+    }
+    var o_id = new mongo.ObjectID(req.params.id);
+    if (json) {
+      Task.update(
+        {_id : o_id},
+        json,
+        function(err, task){
+          if (err) {
+            res.send(err);
+          } else {
+            res.send(task) 
+          }      
+        }
+      )  
+    } else {
+      task = new Task(json)
+      task.save(function(err, task) {
+        if (err) {
+          res.send(err);
+        } else {
+          res.send(task) 
+        }
+
+      })
+    }
+    
+  })
+  
   router.post('/complete/:id', function(req, res) {
     var o_id = new mongo.ObjectID(req.params.id);
     var json = {}
@@ -274,7 +319,7 @@ module.exports = function(mongoose) {
     cursor = db.collection('tasks').find({'_id':o_id})
     cursor.toArray(function(err, docs) {
         json = docs[0]
-      if ("punches" in json) {
+      if (json.punches) {
         punches = json.punches
         if ("in" in punches[punches.length - 1]){ 
 
@@ -283,7 +328,7 @@ module.exports = function(mongoose) {
           json.punches.push({'in' : new Date()})
 
         } else { //Punch out             
-          // punches = [{'in' : sometime, 'out' : sometime}]      
+          // punches = [{'in' : sometime, 'out' : sometime}]    
           punches[punches.length - 1].out = new Date();
          }
         } else {

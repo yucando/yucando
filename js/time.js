@@ -167,8 +167,16 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     })
     return tags
   }
-  
-  $scope.createTask = function() {
+  $scope.cancelForm = function() {
+    $scope.isAddTask=false; 
+    $scope.editTaskId = null;
+    $scope.taskname = null;
+    $scope.timeEstimate = null;
+    $scope.points = null;
+    $scope.tags = null;
+    $scope.notes = null;
+  }
+  $scope.submitTask = function() {
     if ($scope.taskname) {
       json = {
         "taskname" : $scope.taskname, 
@@ -177,7 +185,15 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
         "tags" : parseTags($scope.tags),
         "notes" : $scope.notes
       }
-      var g = $http.post('/task', json)
+      url = '/task';
+      if ($scope.editTaskId) {
+        // Update that task in the current feed
+        json._id = $scope.editTaskId;
+        url += '/' + $scope.editTaskId;
+        $scope.editTaskId = null;
+      }
+      
+      var g = $http.post(url, json)
       g.success(function(response){
         loadTasks($http)
       });
@@ -243,7 +259,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
       task.isExpanded = false;
       task.isMouseOver = false;
 
-      if ('timeCompleted' in task) {
+      if ('timeCompleted' in task && task.timeCompleted != null) {
         task.isIncomplete = false
       } else {
         task.isIncomplete = true
@@ -308,7 +324,7 @@ countdown = function(){
     angular.forEach($scope.tasks, function(task, index){
       if(task.isActive)
         task.totalTime++
-        task.percentage = 100* task.totalTime / task.timeEstimate;
+        task.percentage = 100 * task.totalTime / task.timeEstimate;
     }) 
   }, 1000);  
 }
@@ -346,6 +362,19 @@ socket.on('chat message', function(msg){
   $rootScope.$digest();
   $rootScope.mrs = msg;
 })
+
+$scope.editTaskId = null;
+
+$scope.editTask = function (id) {
+  index = getTaskIndex(id)
+  $scope.taskname = $scope.tasks[index].taskname;
+  $scope.timeEstimate = $scope.tasks[index].timeEstimate;
+  $scope.points = $scope.tasks[index].points;
+  $scope.tags = $scope.tasks[index].tags.join(', ');
+  $scope.notes = $scope.tasks[index].notes;
+  $scope.tasks[index].isActive = !$scope.tasks[index].isActive 
+  $scope.editTaskId = id;
+}
 
 /* 
 Login

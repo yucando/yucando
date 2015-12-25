@@ -103,9 +103,9 @@
     
     <!-- middle panel -->
     <div class = "col-md-6">
-      <div ng-show="isAddTask">
+      <div ng-show="isAddTask || editTaskId">
         <!-- Create task form -->
-        <form id="login-form" ng-submit="createTask()" method="post" role="form" style="display: block;">
+        <form id="login-form" ng-submit="submitTask()" method="post" role="form" style="display: block;">
           <div class="form-group">
             <input type="text" ng-model="taskname" name="taskname" id="name" tabindex="1" class="form-control" placeholder="task name" value="">
           </div>
@@ -132,11 +132,11 @@
           <div>
             <div class="row">
               <div class="col-sm-6">
-                <input type="submit" ng-click="isAddTask=false" name="create-task-submit" id="create-task-submit" tabindex="4" class="form-control btn btn-login" value="Create Task">
+                <input type="submit" ng-click="isAddTask=false" name="task-submit" id="task-submit" tabindex="4" class="form-control btn btn-login" value="{{ (editTaskId != null) ? 'Submit Changes' : 'Create Task'}}">
               </div>
         </form>
               <div class="col-sm-6">
-                <button ng-click="isAddTask=false" tabindex="5" class="form-control btn btn-login">Cancel</button>
+                <button ng-click="cancelForm()" tabindex="5" class="form-control btn btn-login">Cancel</button>
               </div>
             </div>
           </div>
@@ -145,7 +145,7 @@
 
       
       </div>
-      <div ng-hide="isAddTask">
+      <div ng-hide="isAddTask || editTaskId">
         <div align=center>
           <button ng-click="isAddTask = true">Add a task</button>
           <button ng-click="areCompletedsShowing = !areCompletedsShowing">Toggle Completed Tasks</button>
@@ -160,7 +160,7 @@
                 <div class="col-sm-6">
                   <div class="progress">
                     <div class="progress-bar" role="progressbar" aria-valuenow={{task.percentage}}
-                    aria-valuemin="0" aria-valuemax="100" style={{progressBar(task.percentage)}}>{{task.percentage}}%
+                    aria-valuemin="0" aria-valuemax="100" style={{progressBar(task.percentage)}}>{{task.percentage | number : 0}}%
                     </div>
                   </div>
                 </div>
@@ -175,6 +175,11 @@
               <button ng-show="task.isExpanded" type="button" class="btn btn-info" ng-click="task.isExpanded=false">
                 <span class="glyphicon glyphicon-minus"></span> 
                 Less
+              </button>
+              
+              <button type="button" class="btn btn-info" ng-click="editTask(task._id)">
+                <span class="glyphicon glyphicon-edit"></span> 
+                Edit
               </button>
 
               <button ng-hide="task.isActive" type="button" class="btn btn-info" ng-click="punch(task._id)">
