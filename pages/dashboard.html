@@ -103,6 +103,8 @@
     
     <!-- middle panel -->
     <div class = "col-md-6">
+      
+      
       <div ng-show="isAddTask || editTaskId">
         <!-- Create task form -->
         <form id="login-form" ng-submit="submitTask()" method="post" role="form" style="display: block;">
@@ -119,6 +121,27 @@
               </div>
               <div class="col-sm-5">
                 <input type="text" ng-model="tags" name="tags" id="tags" tabindex="4" class="form-control" placeholder="tags, separated by commas">
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="input-group form-horizontal">
+                    <input type="text" placeholder="due date" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="due" is-open="isDueOpen"  />
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-info" ng-click="openCalendar($event, prop, 'due')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                  </div>
+                </div>
+            
+                <div class="col-sm-6">
+                  <div class="input-group form-horizontal">
+                      <input type="text" placeholder="defer date" class="form-control" datetime-picker="dd MMM yyyy HH:mm" ng-model="defer" is-open="isDeferOpen"  />
+                      <span class="input-group-btn">
+                          <button type="button" class="btn btn-info" ng-click="openCalendar($event, prop, 'defer')"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
               </div>
             </div>
           </div>

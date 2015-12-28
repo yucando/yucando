@@ -15,6 +15,10 @@
 }
 
 .btn {
+  color: #000;
+}
+
+.btn-info {
   color: #fff;
 }
 
@@ -170,3 +174,29 @@ div.tasks.panel {
 body {
   height: 100%;
 }
+
+p
+.form-horizontal {
+    width:500px;
+}
+
+.datetime-picker-dropdown {
+
+}
+
+.datetime-picker-dropdown > li.date-picker-menu div > table .btn-default {
+    border: 0;
+    color: #000;
+}
+
+.datetime-picker-dropdown > li.time-picker-menu div > table {
+  
+}
+
+.datetime-picker-dropdown > .btn.btn-default {
+  color: #000;
+}
+
+/*div.datetime-picker-dropdown > li.date-picker-menu div > table .btn.btn-default.btn-sm {
+  color: #f00;
+}*/

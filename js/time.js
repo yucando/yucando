@@ -175,6 +175,8 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     $scope.points = null;
     $scope.tags = null;
     $scope.notes = null;
+    $scope.due = null;
+    $scope.defer = null;
   }
   $scope.submitTask = function() {
     if ($scope.taskname) {
@@ -183,7 +185,9 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
         "timeEstimate" : $scope.timeEstimate,
         "points" : $scope.points,
         "tags" : parseTags($scope.tags),
-        "notes" : $scope.notes
+        "notes" : $scope.notes,
+        "due" : new Date($scope.due),
+        "defer" : new Date($scope.defer)
       }
       url = '/task';
       if ($scope.editTaskId) {
@@ -372,9 +376,26 @@ $scope.editTask = function (id) {
   $scope.points = $scope.tasks[index].points;
   $scope.tags = $scope.tasks[index].tags.join(', ');
   $scope.notes = $scope.tasks[index].notes;
+  $scope.due = $scope.tasks[index].due;
+  $scope.defer = $scope.tasks[index].defer;
   $scope.tasks[index].isActive = !$scope.tasks[index].isActive 
   $scope.editTaskId = id;
 }
+
+var that = $scope;
+
+   $scope.isDueOpen = false;
+   $scope.isDeferOpen = false;
+
+   $scope.openCalendar = function(e, prop, cal) {
+       e.preventDefault();
+       e.stopPropagation();
+       // Dirty hack
+       if (cal == "due" )
+        that.isDueOpen = true;
+       else 
+        that.isDeferOpen = true;
+   };
 
 /* 
 Login

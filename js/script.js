@@ -12,7 +12,7 @@
     }
 
     // create the module and name it yucandoApp
-    var yucandoApp = angular.module('yucandoApp', ['ngRoute']);
+    var yucandoApp = angular.module('yucandoApp', ['ngRoute', 'ui.bootstrap', 'ui.bootstrap.datetimepicker']);
     
     
     
