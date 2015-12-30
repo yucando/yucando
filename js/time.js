@@ -77,21 +77,21 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   
   $scope.punch = function(id){
     index = getTaskIndex(id)
-    var url = '/task/punch/' + id
+    var url = '/api/task/punch/' + id
     var g = $http.get(url);
     $scope.tasks[index].isActive = !$scope.tasks[index].isActive
   }
   
   $scope.complete = function(id) {
     index = getTaskIndex(id)
-    var url = '/task/complete/' + id
+    var url = '/api/task/complete/' + id
     var g = $http.post(url);
     $scope.tasks[index].isIncomplete = false
   }
   
   $scope.markAsIncomplete = function(id) {
     index = getTaskIndex(id);
-    var url = 'task/uncomplete/' + id;
+    var url = 'api/task/uncomplete/' + id;
     var g = $http.post(url);
     $scope.tasks[index].isIncomplete = true;
   }
@@ -109,7 +109,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   
   $scope.login = function() {
     json = {"username" : $scope.username, "password" : $scope.password}
-    var postdata = $http.post('/user/login',json)
+    var postdata = $http.post('/api/user/login',json)
     postdata.error(function (response) {
       $rootScope.jwt_is_set = false
       $scope.password = "";
@@ -135,7 +135,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
         "password" : $scope.registerPassword,
         "email" : $scope.registerEmail
       }
-      var jwt = $http.post('/user/register', json)
+      var jwt = $http.post('/api/user/register', json)
       jwt.error(function (response) {
         $rootScope.jwt_is_set = false
         $scope.password = "";
@@ -189,7 +189,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
         "due" : new Date($scope.due),
         "defer" : new Date($scope.defer)
       }
-      url = '/task';
+      url = '/api/task';
       if ($scope.editTaskId) {
         // Update that task in the current feed
         json._id = $scope.editTaskId;
@@ -218,7 +218,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   }
   
   loadFeed = function($http){
-    var url = '/feed'
+    var url = '/api/feed'
     var g = $http.get(url);
     g.success(function(response){
       angular.forEach(response, function(message, index) {
@@ -242,8 +242,6 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
     })
   }
   
-  $scope.fill = "70"
-  
   $scope.progressBar = function(percentage){
     return "width:" + percentage + "%"
   }
@@ -253,7 +251,7 @@ yucandoApp.controller("myCtrl",function($rootScope, $scope, $http, $route, $time
   }
   
   loadTasks = function($http){
-  var url = '/task'
+  var url = '/api/task'
   var g = $http.get(url);
   g.success(function (response) {
     angular.forEach(response, function(task, index) {
@@ -345,7 +343,7 @@ $scope.stop = function(){
 $scope.sendChatMessage = function() {
   
   json = {"message" : $scope.myMsg}
-  var postdata = $http.post('/feed',json)
+  var postdata = $http.post('/api/feed',json)
   $scope.myMsg = ""
   postdata.error(function (response) {
     alert('Your session has expired. Log out and back in again.')

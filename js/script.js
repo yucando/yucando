@@ -121,7 +121,7 @@
       $scope.task_id_response = "Yo"
       
       $scope.get_task_id_submit = function() {
-        var postdata = $http.get('/task/id/' + $scope.get_task_id)
+        var postdata = $http.get('/api/task/id/' + $scope.get_task_id)
         postdata.error(function (response) {
           /*
             Error handling
@@ -133,7 +133,7 @@
       }
       
       $scope.delete_task_submit = function() {
-        var postdata = $http.delete('/task/' + $scope.delete_task_id)
+        var postdata = $http.delete('/api/task/' + $scope.delete_task_id)
         postdata.error(function (response) {
           /*
             Error handling
@@ -145,7 +145,7 @@
       }
       
       $scope.put_task_submit = function() {
-        var postdata = $http.put('/task/' + $scope.put_task_name)
+        var postdata = $http.put('/api/task/' + $scope.put_task_name)
         postdata.error(function (response) {
           /*
             Error handling
@@ -158,7 +158,7 @@
       
       $scope.task_submit = function() {
         
-        var postdata = $http.get('/task')
+        var postdata = $http.get('/api/task')
         postdata.error(function (response) {
           /*
             Error handling

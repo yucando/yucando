@@ -145,9 +145,9 @@ var SampleApp = function() {
       task = require('./routes/task.js')(mongoose);
       user = require('./routes/user.js')(mongoose);
       feed = require('./routes/feed.js')(mongoose);
-      self.app.use('/task', task);
-      self.app.use('/feed', feed);
-      self.app.use('/user', user);
+      self.app.use('/api/task', task);
+      self.app.use('/api/feed', feed);
+      self.app.use('/api/user', user);
 
       
       self.app.get('', function(req, res) {
@@ -201,7 +201,7 @@ var SampleApp = function() {
             console.log('Got a chat message');
             io.emit('chat message', msg);
           });*/
-          self.app.post('/feed', function(req, res, next){
+          self.app.post('/api/feed', function(req, res, next){
             io.emit('chat message', { "username" : req.authenticatedUser.username, "timestamp" : Date(), "message": req.body.message})
             res.send('Success')
           })
